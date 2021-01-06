@@ -7,11 +7,28 @@ python scripts tools for dev and ops.
 请参考 scripts/sample.py。默认的程序脚本 sample.py 使用同名的配置文件 options/sample.yaml。
 
 
-## Prepare for python2.7 on el7 (rhel7, centos 7)
+## Prepare for python2.7
+
+- el7 (rhel7, centos 7)
 
 	$ cd prepare/
 
-	$ sudo sh ./preinstall.sh
+	$ sudo sh ./preinstall_py27_el7.sh
+
+- cygwin amd64
+
+	If has errors, install python27-devel for cygwin first!
+
+	If an installation of usb0 driver required when running setup-x86_64.exe for cygwin, you could found it in below zip:
+		
+		libusb-win32-devel-filter-1.2.6.0.zip
+
+	Run cygwin64 and in its terminal:
+
+	$ cd prepare/
+
+	$ sh ./preinstall_py27_cygwin.sh
+
 
 ## Run sample
 
