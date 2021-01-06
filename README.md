@@ -32,9 +32,25 @@ python scripts tools for dev and ops.
 
 ## Run sample
 
-	$ cd scripts/ && ./sample.py
+	$ cd scripts/
 
-default config yaml file for sample.py (sample.yaml) lies at:
+	$ ./sample.py
+
+		[ERROR] log path not found: '/var/log/pytools-logs/sample-1.0.0'
+
+	$ mkdir -p /var/log/pytools-logs/sample-1.0.0
+
+	$ ./sample.py
+
+		[2021-01-06 18:44:58 - evntlog.py:260 - init_logger] <9009:INFO> load logging.config: /cygdrive/c/Users/cheungmine/Workspace/github.com/pytools/scripts/config/logger.config
+		[2021-01-06 18:44:58 - logger.py:45 - set_logger] <9009:FORCE> logging config : /cygdrive/c/Users/cheungmine/Workspace/github.com/pytools/scripts/config/logger.config
+		[2021-01-06 18:44:58 - logger.py:46 - set_logger] <9009:FORCE> logger file    : /var/log/pytools-logs/sample-1.0.0/sample.log
+		[2021-01-06 18:44:58 - logger.py:47 - set_logger] <9009:FORCE> logger level   : DEBUG
+		[2021-01-06 18:44:58 - logger.py:48 - set_logger] <9009:FORCE> logger name    : main
+		[INFO] TODO
+
+
+NOTE: default config yaml file for sample.py (sample.yaml) lies at:
 
 	./scripts/options/sample.yaml
 
