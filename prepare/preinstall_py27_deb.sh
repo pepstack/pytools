@@ -2,7 +2,7 @@
 #
 # @file: preinstall.sh
 #
-#   prepare for python2.7 on el7
+#   prepare for python2.7 on ubuntu
 #
 # @create: 2021-01-06 15:19:12
 # @update: 2021-01-06 18:01:12
@@ -15,7 +15,7 @@ _name=$(basename $_file)
 
 _ver=1.0.0
 
-_help="prepare environment for python2.7 on el7."
+_help="prepare environment for python2.7 on ubuntu."
 
 
 . $_cdir/common.sh
@@ -47,9 +47,8 @@ if [ $pyver != "2.7" ]; then
 fi
 
 #### fix bug: pyconfig.h not found
-echoinfo "installing python-devel" 
-sudo yum install -y python-devel
-
+echoinfo "installing python-dev"
+sudo apt install -y python-dev
 
 #### http://pyyaml.org/download/libyaml/yaml-0.2.5.tar.gz
 echoinfo "installing yaml-0.2.5"

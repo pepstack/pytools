@@ -9,15 +9,15 @@ python scripts tools for dev and ops.
 
 ## Prepare for python2.7
 
-- el7 (rhel7, centos 7)
+- Linux (rhel7, centos7, ubuntu18+)
 
 	$ cd prepare/
 
-	$ sudo sh ./preinstall_py27_el7.sh
+	$ sudo sh ./preinstall_py27_linux.sh
 
-- cygwin amd64
+- Windows (Only for cygwin64)
 
-	If has errors, install python27-devel for cygwin first!
+	If has errors, install python2-devel, python27-devel for cygwin first!
 
 	If an installation of usb0 driver required when running setup-x86_64.exe for cygwin, you could found it in below zip:
 		
