@@ -1,0 +1,72 @@
+###########################################################
+# type: optional string default
+# help: mandantory string
+# $APPHOME: 会自动替换为 python 程序所在路径
+# $APPNAME: 会自动替换为 python 程序名
+# $APPVER:  会自动替换为 python 程序版本
+###########################################################
+main:
+    title: $APPNAME
+    description: $APPHELP
+    options:
+        - log_path:
+            optarg: '-O --log-path'
+            action: store
+            type: string
+            default: '/var/log/pytools-logs/$APPNAME-$APPVER'
+            help: 'path to app log dir'
+            metavar: LOGPATH
+
+        - log_level:
+            optarg: '-L --log-level'
+            action: store
+            type: string
+            default: DEBUG
+            help: 'log level: DEBUG, WARN, INFO, ERROR'
+            metavar: LOGLEVEL
+
+        - log_config:
+            optarg: '-C --log-config'
+            default: '$APPHOME/config/logger.config'
+            help: 'path to logger config file'
+            metavar: LOGCONFIG
+
+        - logger:
+            optarg: '--logger'
+            default: 'main'
+            help: 'logger name in log config file'
+
+        - path:
+            optarg: '-P --path'
+            action: store
+            type: string
+            help: 'path prefix for source files to be revised'
+            metavar: PATH
+
+        - filter:
+            optarg: '-F --filter'
+            action: store
+            type: string
+            default: 'java,c,cpp,python,php,shell'
+            help: 'included file filter'
+            metavar: FILTER
+
+        - verno:
+            optarg: '-N --verno'
+            action: store
+            type: string
+            help: 'update file version number'
+            metavar: VERNO
+
+        - author:
+            optarg: '-A --author'
+            action: store
+            type: string
+            help: 'set author for files'
+            metavar: NAME
+
+        - test:
+            optarg: '--test'
+            action: store_true
+            default: False
+            help: "only test (not to revise)"

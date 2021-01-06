@@ -62,3 +62,33 @@ NOTE: default config yaml file for sample.py (sample.yaml) lies at:
 2) rename them as you want;
 
 3) rewrite them as your requirement.
+
+## revise.py
+
+自动更新代码文件头信息的工具。要求一个代码文件(mydir/sample.h)包含如下信息头：
+
+
+```
+/**
+ * @file:
+ *   sample c header file.
+ * 
+ * @author: $author$
+ * @create: $create$
+ * @update:
+ * @version:
+ */
+
+#include <stdio.h>
+
+```
+
+当运行 revise.py 指定这个文件的父目录，自动更新上面的文件头。
+
+	$ cd scripts/
+
+	$ ./revise.py -F cpp -P /path/to/mydir
+
+	$ ./revise.py -F cpp -N 0.1.1 -P /path/to/mydir
+
+注：不包括上面的头信息的文件不会做任何改变。
