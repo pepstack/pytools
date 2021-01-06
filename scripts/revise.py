@@ -87,7 +87,7 @@ def parse_strarr(str):
 def test_file(pathfile, fstat):
     global files_count
     files_count += 1
-    util.info("[%d] TEST: %s" % (files_count, pathfile))
+    util.info("TEST[%d] %s" % (files_count, pathfile))
     pass
 
 
@@ -123,7 +123,7 @@ def revise_file(pathfile, filename, fstat, author, verno, curtime, istest):
 
     files_count += 1
 
-    util.info("[%d] REV: %s" % (files_count, pathfile))
+    util.info("REV[%d] %s" % (files_count, pathfile))
     pass
 
 
