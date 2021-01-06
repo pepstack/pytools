@@ -41,6 +41,7 @@ ignored_dirs = [
         "deplibs",
         "libs",
         "test",
+        "tests",
         "doc",
         "build",
         "dist",
