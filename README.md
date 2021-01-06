@@ -1,6 +1,6 @@
 # pytools
 
-python scripts tools for dev and ops.
+A set of devops scripts tools for python2.7.
 
 这是一套方便 Python2.7.x 脚本开发的工具箱。简单的复制几个文件，改个名字，就提供了命令行参数、日志等常用功能，大大提高开发速度。
 
@@ -9,7 +9,7 @@ python scripts tools for dev and ops.
 
 ## Prepare for python2.7
 
-- Linux (rhel7, centos7, ubuntu18+)
+- Linux (rhel7+, centos7+, ubuntu18+)
 
 	$ cd prepare/
 
@@ -20,7 +20,7 @@ python scripts tools for dev and ops.
 	If has errors, install python2-devel, python27-devel for cygwin first!
 
 	If an installation of usb0 driver required when running setup-x86_64.exe for cygwin, you could found it in below zip:
-		
+
 		libusb-win32-devel-filter-1.2.6.0.zip
 
 	Run cygwin64 and in its terminal:
