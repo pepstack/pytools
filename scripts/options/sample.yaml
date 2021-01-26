@@ -14,7 +14,7 @@ main:
             action: store
             type: string
             default: '/var/log/pytools-logs/$APPNAME-$APPVER'
-            help: 'path to app log dir'
+            help: 'path to app log directory'
             metavar: LOGPATH
 
         - log_level:

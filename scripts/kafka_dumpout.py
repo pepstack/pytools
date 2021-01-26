@@ -101,7 +101,11 @@ def main(parser):
 
     util.make_dirs_nothrow(dumpdir)
 
-    dumpfile = os.path.join(dumpdir, "%s_%d-%d.dumpout" % (group_id, options.offset, options.limit))
+    limitstr = str(options.limit)
+    if (options.limit < 0):
+        limitstr = "unlimit"
+
+    dumpfile = os.path.join(dumpdir, "%s_%d-%s.dumpout" % (group_id, options.offset, limitstr))
 
     util.remove_file_nothrow(dumpfile)
 
@@ -119,7 +123,7 @@ def main(parser):
     elog.info("topic: %r", options.kafka_topic)
     elog.info("group: %s", group_id)
     elog.info("offset: %d", options.offset)
-    elog.info("limit: %d", options.limit)
+    elog.info("limit: %s", limitstr)
     elog.info("dump file: %s", dumpfile)
 
     consume_messages(kaf_consumer, util.DotDict(

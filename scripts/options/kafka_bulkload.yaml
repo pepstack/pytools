@@ -35,7 +35,7 @@ main:
             default: 'main'
             help: 'logger name in log config file'
 
-        - kafka_servers:
+        - bootstrap_servers:
             optarg: '-K --kafka'
             default: 'localhost:9091,localhost:9092,localhost:9093'
             help: "kafka 服务器列表"
@@ -43,24 +43,32 @@ main:
         - kafka_topic:
             optarg: '-T --topic'
             default: 'mpaylog'
-            help: "kafka topic to consume to"
+            help: "kafka topic to produce to"
 
-        - group_id:
-            optarg: '-G --group'
-            default: 'G${time}'
-            help: "消费组名"
-
-        - dump_root:
-            optarg: '-D --dump-root'
-            default: '/tmp'
-            help: "输出的文件路径的根路径"
-
-        - limit:
+        - partitions:
+            optarg: '-P --partitions'
+            action: store
             type: int
-            default: -1
-            help: "最大导出消息条数(-1: unlimit)"
+            default: 1
+            help: 'number of partitions of kafka not more than 64'
+            metavar: COUNT
 
-        - offset:
-            type: int
-            default: 0
-            help: "从第几条消息开始导出"
+        - client_id:
+            optarg: '--client-id'
+            action: store
+            type: string
+            default: 'bulkload'
+            help: "name of this client passed in each request to servers can be used to identify specific server-side log entries correspond to this client."
+            metavar: ID
+    
+        - utf8_encode:
+            optarg: '--utf8-encode'
+            action: store_true
+            default: False
+            help: "force to apply utf-8 encoding"
+
+        - send_verbose:
+            optarg: '--send-verbose'
+            action: store_true
+            default: False
+            help: "whether print out messages send to kafka or not"
