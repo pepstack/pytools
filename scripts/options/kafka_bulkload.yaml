@@ -53,6 +53,28 @@ main:
             help: 'number of partitions of kafka not more than 64'
             metavar: COUNT
 
+        - gameid:
+            optarg: '-g --gameid'
+            default: '189001'
+            help: "string value for game id"
+            metavar: GID
+
+        - rounds:
+            optarg: '-R --rounds'
+            action: store
+            type: int
+            default: 10000
+            help: 'number of rounds to produce messages'
+            metavar: NUMBER
+
+        - messages:
+            optarg: '-N --messages'
+            action: store
+            type: int
+            default: 100
+            help: 'number of messages per round'
+            metavar: NUMBER
+
         - client_id:
             optarg: '--client-id'
             action: store

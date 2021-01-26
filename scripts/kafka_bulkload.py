@@ -19,6 +19,12 @@
 # create: 2020-11-23
 # update: 2021-01-26
 #
+# 删除 kafka topic:
+#   auto.create.topics.enable = false
+#   delete.topic.enable=true
+#
+# $ kafka-topics.sh --delete --zookeeper zk1:2181,zk2:2182,zk3:2183 --topic mpaylog
+#
 ########################################################################
 from __future__ import print_function
 import os, sys, stat, signal, shutil, inspect, commands, time, datetime
@@ -58,11 +64,35 @@ APPVER = "1.0.0"
 APPHELP = "load bulky messages into kafka topic"
 
 ########################################################################
+def makeup_messages(nmsgs, gid, partition_id):
+    messages = []
+
+    for i in range(0, nmsgs):
+        logtime = "2021-01-26 16:10:19"
+        custid = "1"
+        gameid = gid
+        accnt = "0-3119404451"
+        ip = "192.168.10.121"
+
+        nip = "61443341500"
+        fillpoint = "100.00"
+        objid="www.github.com"
+        orderid="9603267803212"
+        orderidpt="326032678106535710"
+
+        zoneid="2"
+
+        line = "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (logtime, custid, gameid, accnt, ip, nip, fillpoint, objid, orderid, orderidpt, zoneid)
+
+        messages.append(line)
+        pass
+
+    return messages
+
+
 @try_except_log
-def produce_messages(kaf_producer, topic, partition_id = 0, utf8_encode = False, send_verbose = False):
-    messages = [
-        "2021-01-26 16:10:19,1,5078,0-1119404459,36.159.130.135,614433415,128.00,com.juzi.balls.mogu.140,key9603267803212,qa316032678106525710,2"
-    ]
+def produce_messages(kaf_producer, gid, nmsgs, topic, partition_id = 0, utf8_encode = False, send_verbose = False):
+    messages = makeup_messages(nmsgs, gid, partition_id)
 
     for line in messages:
         if utf8_encode:
@@ -74,7 +104,7 @@ def produce_messages(kaf_producer, topic, partition_id = 0, utf8_encode = False,
         kaf_producer.send(topic, value=line, partition=partition_id)
         pass
 
-    if len(messages) > 0:
+    if nmsgs > 0:
         kaf_producer.flush()
 
 
@@ -103,8 +133,9 @@ def main(parser):
     kafka_topic = options.kafka_topic
 
     for partition_id in range(0, options.partitions):
-        elog.info("produce messages to kafka...{%s#%d}", kafka_topic, partition_id)
-        produce_messages(kaf_producer, kafka_topic, partition_id, options.utf8_encode, options.send_verbose)
+        for r in range(0, options.rounds):
+            elog.info("[round:%d/%d] produce messages to kafka...{%s#%d}", r, options.rounds, kafka_topic, partition_id)
+            produce_messages(kaf_producer, options.gameid, options.messages, kafka_topic, partition_id, options.utf8_encode, options.send_verbose)
     pass
 
 ########################################################################
