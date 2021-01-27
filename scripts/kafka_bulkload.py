@@ -64,14 +64,22 @@ APPVER = "1.0.0"
 APPHELP = "load bulky messages into kafka topic"
 
 ########################################################################
+sum_value = 0.00
+
 def makeup_messages(nmsgs, gamids, logtime, urls):
     messages = []
+
+    global sum_value
 
     if not logtime:
         finishtime = util.datetime_to_string(None, 0, datetime.datetime.now())
 
     for i in range(0, nmsgs):
         urlcols = random.choice(urls).strip().split(",")
+
+        strvalue = "%.2lf" % random.uniform(1, 500)
+
+        sum_value += float(strvalue)
 
         #<col:0>
         # finishtime
@@ -92,7 +100,7 @@ def makeup_messages(nmsgs, gamids, logtime, urls):
         nip = random.randint(10000000, 10001000)
 
         #<col:6>
-        fillpoint = "%.2lf" % random.uniform(1, 500)
+        fillpoint = strvalue
 
         #<col:7>
         objid=urlcols[3] + "/" + ''.join(random.sample(string.ascii_letters + string.digits, random.randint(4, 20)))
@@ -167,11 +175,13 @@ def main(parser, urls):
     #  random.seed(0)
     gamids = options.gameid.split(",")
 
+    global sum_value
+
     for r in range(0, options.rounds):
-        elog.info("(round:%d/%d) produce %d messages to kafka {%s}...", r, options.rounds, options.messages, kafka_topic)
+        elog.info("(%d/%d) produce %d messages to kafka {%s}...", r, options.rounds, options.messages, kafka_topic)
         produce_messages(kaf_producer, gamids, options.messages, urls, kafka_topic, options.partitions, options.logtime, options.utf8_encode, options.verbose)
 
-    elog.force("total %d messages produced to kafka {%s}.", options.rounds * options.messages, kafka_topic)
+    elog.force("total %d messages(sum_value=%.4lf) produced to kafka {%s}.", options.rounds * options.messages, sum_value, kafka_topic)
     pass
 
 ########################################################################
