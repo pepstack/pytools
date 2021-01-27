@@ -29,7 +29,7 @@
 from __future__ import print_function
 import os, sys, stat, signal, shutil, inspect, commands, time, datetime
 
-import yaml, codecs, uuid, platform
+import yaml, codecs, uuid, platform, string, random
 
 import optparse, ConfigParser
 
@@ -64,24 +64,50 @@ APPVER = "1.0.0"
 APPHELP = "load bulky messages into kafka topic"
 
 ########################################################################
-def makeup_messages(nmsgs, gid, partition_id, logtime):
+def makeup_messages(nmsgs, gamids, logtime, urls):
     messages = []
 
+    if not logtime:
+        finishtime = util.datetime_to_string(None, 0, datetime.datetime.now())
+
     for i in range(0, nmsgs):
-        custid = "1"
-        gameid = gid
-        accnt = "0-3119404451"
-        ip = "192.168.10.121"
+        urlcols = random.choice(urls).strip().split(",")
 
-        nip = "61443341500"
-        fillpoint = "100.00"
-        objid="www.github.com"
-        orderid="9603267803212"
-        orderidpt="326032678106535710"
+        #<col:0>
+        # finishtime
 
-        zoneid="2"
+        #<col:1>
+        custid = str(random.randint(1, 99999))
 
-        line = "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (logtime, custid, gameid, accnt, ip, nip, fillpoint, objid, orderid, orderidpt, zoneid)
+        #<col:2>
+        gameid = random.choice(gamids)
+
+        #<col:3>
+        accnt = str(random.randint(100, 999))
+
+        #<col:4>
+        ip = urlcols[1]
+
+        #<col:5>
+        nip = random.randint(10000000, 10001000)
+
+        #<col:6>
+        fillpoint = "%.2lf" % random.uniform(1, 500)
+
+        #<col:7>
+        objid=urlcols[3] + "/" + ''.join(random.sample(string.ascii_letters + string.digits, random.randint(4, 20)))
+
+        #<col:8>
+        orderid=util.name_by_split_minutes(finishtime, 1, None, str(random.randint(1, 1000000)))
+
+        #<col:9>
+        orderidpt=urlcols[0] + orderid
+
+        #<col:10>
+        zoneid=urlcols[0]
+
+        # row=[cols:0, col:10]
+        line = "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s" % (finishtime, custid, gameid, accnt, ip, nip, fillpoint, objid, orderid, orderidpt, zoneid)
 
         messages.append(line)
         pass
@@ -90,18 +116,21 @@ def makeup_messages(nmsgs, gid, partition_id, logtime):
 
 
 @try_except_log
-def produce_messages(kaf_producer, gid, nmsgs, topic, logtime = None, partition_id = 0, utf8_encode = False, send_verbose = False):
-    if logtime:
-        messages = makeup_messages(nmsgs, gid, partition_id, logtime)
-    else:
-        messages = makeup_messages(nmsgs, gid, partition_id, util.datetime_to_string())
+def produce_messages(kaf_producer, gamids, nmsgs, urls, topic, partitions, logtime = None, utf8_encode = False, verbose = False):
+    messages = makeup_messages(nmsgs, gamids, logtime, urls)
+
+    linenum = 0
 
     for line in messages:
+        partition_id = int(linenum) % int(partitions)
+
+        linenum += 1
+
         if utf8_encode:
             line = line.encode('utf-8')
 
-        if send_verbose:
-            elog.force("-{{%s}}-", line)
+        if verbose:
+            print("{%s#%d:{%s}}" % (topic, partition_id, line))
 
         kaf_producer.send(topic, value=line, partition=partition_id)
         pass
@@ -113,7 +142,7 @@ def produce_messages(kaf_producer, gid, nmsgs, topic, logtime = None, partition_
 ########################################################################
 # 主入口函数
 @try_except_log
-def main(parser):
+def main(parser, urls):
     import utils.logger as logger
     (options, args) = parser.parse_args(args=None, values=None)
     loggerConfig = util.DotDict(
@@ -134,13 +163,15 @@ def main(parser):
 
     kafka_topic = options.kafka_topic
 
-    for partition_id in range(0, options.partitions):
-        for r in range(0, options.rounds):
-            elog.info("(round:%d/%d) produce %d messages to kafka {%s#%d}...", r, options.rounds, options.messages, kafka_topic, partition_id)
+    # https://blog.csdn.net/qq_32599479/article/details/91042234
+    #  random.seed(0)
+    gamids = options.gameid.split(",")
 
-            produce_messages(kaf_producer, options.gameid, options.messages, kafka_topic, options.logtime, partition_id, options.utf8_encode, options.send_verbose)
+    for r in range(0, options.rounds):
+        elog.info("(round:%d/%d) produce %d messages to kafka {%s}...", r, options.rounds, options.messages, kafka_topic)
+        produce_messages(kaf_producer, gamids, options.messages, urls, kafka_topic, options.partitions, options.logtime, options.utf8_encode, options.verbose)
 
-    elog.force("total %d messages produced to kafka {%s#%d}.", options.rounds * options.messages, kafka_topic, partition_id)
+    elog.force("total %d messages produced to kafka {%s}.", options.rounds * options.messages, kafka_topic)
     pass
 
 ########################################################################
@@ -159,7 +190,11 @@ if __name__ == "__main__":
         group_options = os.path.join(APPHOME, "options", APPNAME + ".yaml")
     )
 
+    sitesfile = os.path.join(APPHOME, "config", "websites.csv")
+    with open(sitesfile) as csvfile:
+        urls = csvfile.readlines()
+
     # 主函数
-    main(parser)
+    main(parser, urls)
 
     sys.exit(0)

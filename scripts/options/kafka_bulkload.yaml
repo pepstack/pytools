@@ -62,7 +62,7 @@ main:
         - gameid:
             optarg: '-g --gameid'
             default: '0000'
-            help: "string value for game id"
+            help: "string value for game id or gameid list"
             metavar: GID
 
         - rounds:
@@ -94,9 +94,3 @@ main:
             action: store_true
             default: False
             help: "force to apply utf-8 encoding"
-
-        - send_verbose:
-            optarg: '--send-verbose'
-            action: store_true
-            default: False
-            help: "whether print out messages send to kafka or not"
