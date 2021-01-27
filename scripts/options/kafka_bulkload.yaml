@@ -53,9 +53,15 @@ main:
             help: 'number of partitions of kafka not more than 64'
             metavar: COUNT
 
+        - logtime:
+            optarg: '--logtime'
+            default: Null
+            help: "date time string like: 'yyyyMMdd mm:hh:ss'"
+            metavar: TIME
+
         - gameid:
             optarg: '-g --gameid'
-            default: '189001'
+            default: '0000'
             help: "string value for game id"
             metavar: GID
 

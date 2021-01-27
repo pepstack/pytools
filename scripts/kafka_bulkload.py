@@ -64,11 +64,10 @@ APPVER = "1.0.0"
 APPHELP = "load bulky messages into kafka topic"
 
 ########################################################################
-def makeup_messages(nmsgs, gid, partition_id):
+def makeup_messages(nmsgs, gid, partition_id, logtime):
     messages = []
 
     for i in range(0, nmsgs):
-        logtime = "2021-01-26 16:10:19"
         custid = "1"
         gameid = gid
         accnt = "0-3119404451"
@@ -91,8 +90,11 @@ def makeup_messages(nmsgs, gid, partition_id):
 
 
 @try_except_log
-def produce_messages(kaf_producer, gid, nmsgs, topic, partition_id = 0, utf8_encode = False, send_verbose = False):
-    messages = makeup_messages(nmsgs, gid, partition_id)
+def produce_messages(kaf_producer, gid, nmsgs, topic, logtime = None, partition_id = 0, utf8_encode = False, send_verbose = False):
+    if logtime:
+        messages = makeup_messages(nmsgs, gid, partition_id, logtime)
+    else:
+        messages = makeup_messages(nmsgs, gid, partition_id, util.datetime_to_string())
 
     for line in messages:
         if utf8_encode:
@@ -134,8 +136,11 @@ def main(parser):
 
     for partition_id in range(0, options.partitions):
         for r in range(0, options.rounds):
-            elog.info("[round:%d/%d] produce messages to kafka...{%s#%d}", r, options.rounds, kafka_topic, partition_id)
-            produce_messages(kaf_producer, options.gameid, options.messages, kafka_topic, partition_id, options.utf8_encode, options.send_verbose)
+            elog.info("(round:%d/%d) produce %d messages to kafka {%s#%d}...", r, options.rounds, options.messages, kafka_topic, partition_id)
+
+            produce_messages(kaf_producer, options.gameid, options.messages, kafka_topic, options.logtime, partition_id, options.utf8_encode, options.send_verbose)
+
+    elog.force("total %d messages produced to kafka {%s#%d}.", options.rounds * options.messages, kafka_topic, partition_id)
     pass
 
 ########################################################################
