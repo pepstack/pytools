@@ -180,10 +180,10 @@ def main(parser, urls):
     global sum_value
 
     for r in range(0, options.rounds):
-        elog.info("(%d/%d) produce %d messages to kafka {%s}...sum_value=%.4lf)", r, options.rounds, options.messages, kafka_topic, sum_value)
+        elog.info("(%d/%d) produce %d messages to kafka {%s}...sums=%.4lf", r, options.rounds, options.messages, kafka_topic, sum_value)
         produce_messages(kaf_producer, gamids, options.messages, urls, kafka_topic, options.partitions, options.logtime, options.utf8_encode, options.verbose)
 
-    elog.force("total %d messages(sum_value=%.4lf) produced to kafka {%s}.", options.rounds * options.messages, sum_value, kafka_topic)
+    elog.force("total %d messages(sums=%.4lf) produced to kafka {%s}.", options.rounds * options.messages, sum_value, kafka_topic)
     pass
 
 ########################################################################
