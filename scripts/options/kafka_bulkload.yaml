@@ -56,7 +56,7 @@ main:
         - logtime:
             optarg: '--logtime'
             default: Null
-            help: "date time string like: 'yyyyMMdd mm:hh:ss'"
+            help: "date time string like: 'yyyy-MM-dd mm:hh:ss'"
             metavar: TIME
 
         - gameid:

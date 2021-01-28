@@ -73,6 +73,8 @@ def makeup_messages(nmsgs, gamids, logtime, urls):
 
     if not logtime:
         finishtime = util.datetime_to_string(None, 0, datetime.datetime.now())
+    else:
+        finishtime = logtime
 
     for i in range(0, nmsgs):
         urlcols = random.choice(urls).strip().split(",")
