@@ -1,6 +1,6 @@
 # pytools
 
-A set of devops scripts tools for python2.7.
+A set of devops scripts tools for python2.7.x.
 
 这是一套方便 Python2.7.x 脚本开发的工具箱。简单的复制几个文件，改个名字，就提供了命令行参数、日志等常用功能，大大提高开发速度。
 

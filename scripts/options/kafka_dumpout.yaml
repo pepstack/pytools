@@ -3,7 +3,6 @@
 # help: mandantory string
 # $APPHOME: 会自动替换为 python 程序所在路径
 # $APPNAME: 会自动替换为 python 程序名
-# $APPVER:  会自动替换为 python 程序版本
 ###########################################################
 main:
     title: $APPNAME
@@ -36,8 +35,32 @@ main:
             default: 'main'
             help: 'logger name in log config file'
 
-        - force:
-            optarg: '--force'
-            action: store_true
-            default: False
-            help: "sample"
+        - kafka_servers:
+            optarg: '-K --kafka'
+            default: 'localhost:9091,localhost:9092,localhost:9093'
+            help: "kafka 服务器列表"
+
+        - kafka_topic:
+            optarg: '-T --topic'
+            default: 'mpaylog'
+            help: "kafka topic to consume to"
+
+        - group_id:
+            optarg: '-G --group'
+            default: 'G${time}'
+            help: "消费组名"
+
+        - dump_root:
+            optarg: '-D --dump-root'
+            default: '/tmp'
+            help: "输出的文件路径的根路径"
+
+        - limit:
+            type: int
+            default: -1
+            help: "最大导出消息条数(-1: unlimit)"
+
+        - offset:
+            type: int
+            default: 0
+            help: "从第几条消息开始导出"

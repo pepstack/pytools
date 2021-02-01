@@ -1,0 +1,96 @@
+###########################################################
+# type: optional string default
+# help: mandantory string
+# $APPHOME: 会自动替换为 python 程序所在路径
+# $APPNAME: 会自动替换为 python 程序名
+###########################################################
+main:
+    title: $APPNAME
+    description: $APPHELP
+    options:
+        - log_path:
+            optarg: '-O --log-path'
+            action: store
+            type: string
+            default: '/var/log/pytools-logs/$APPNAME-$APPVER'
+            help: 'path to app log directory'
+            metavar: LOGPATH
+
+        - log_level:
+            optarg: '-L --log-level'
+            action: store
+            type: string
+            default: DEBUG
+            help: 'log level: DEBUG, WARN, INFO, ERROR'
+            metavar: LOGLEVEL
+
+        - log_config:
+            optarg: '-C --log-config'
+            default: '$APPHOME/config/logger.config'
+            help: 'path to logger config file'
+            metavar: LOGCONFIG
+
+        - logger:
+            optarg: '--logger'
+            default: 'main'
+            help: 'logger name in log config file'
+
+        - bootstrap_servers:
+            optarg: '-K --kafka'
+            default: 'localhost:9091,localhost:9092,localhost:9093'
+            help: "kafka 服务器列表"
+
+        - kafka_topic:
+            optarg: '-T --topic'
+            default: 'mpaylog'
+            help: "kafka topic to produce to"
+
+        - partitions:
+            optarg: '-P --partitions'
+            action: store
+            type: int
+            default: 1
+            help: 'number of partitions of kafka not more than 64'
+            metavar: COUNT
+
+        - logtime:
+            optarg: '--logtime'
+            default: Null
+            help: "date time string like: 'yyyy-MM-dd mm:hh:ss'"
+            metavar: TIME
+
+        - gameid:
+            optarg: '-g --gameid'
+            default: '0000'
+            help: "string value for game id or gameid list"
+            metavar: GID
+
+        - rounds:
+            optarg: '-R --rounds'
+            action: store
+            type: int
+            default: 10000
+            help: 'number of rounds to produce messages'
+            metavar: NUMBER
+
+        - messages:
+            optarg: '-N --messages'
+            action: store
+            type: int
+            default: 100
+            help: 'number of messages per round'
+            metavar: NUMBER
+
+        - client_id:
+            optarg: '--client-id'
+            action: store
+            type: string
+            default: 'bulkload'
+            help: "name of this client passed in each request to servers can be used to identify specific server-side log entries correspond to this client."
+            metavar: ID
+    
+        - utf8_encode:
+            optarg: '--utf8-encode'
+            action: store_true
+            default: False
+            help: "force to apply utf-8 encoding"
