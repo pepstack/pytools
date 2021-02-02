@@ -1,5 +1,7 @@
 # install-ansible
 
+## 安装
+
 仅在 master 节点按次序安装以下python包. 要求 centos7.x with python2.7.x !
 
 1) 执行 preinstall_py27_linux.sh, 安装基础包
@@ -20,5 +22,6 @@
 搜索更改的地方：#py27bug
 
 
+## 参考
 
-
+    [Ansible快速入门](https://www.cnblogs.com/yanjieli/p/10969089.html)
