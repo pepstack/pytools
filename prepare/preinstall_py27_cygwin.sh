@@ -5,7 +5,7 @@
 #   prepare for python2.7 on cygwin64
 #
 # @create: 2021-01-06 15:19:12
-# @update: 2021-01-06 18:01:12
+# @update: 2021-01-16 18:01:12
 #
 #######################################################################
 # NOTE: readlink -f not support by MaxOS-X
@@ -66,6 +66,12 @@ tar -zxf $_cdir/setuptools-40.0.0.tar.gz -C $TMPDIR
 cd $TMPDIR/setuptools-40.0.0/ && python setup.py build && python setup.py install
 
 
+#### from markupsafe import Markup,escape
+echoinfo "installing MarkupSafe-1.1.1"
+tar -zxf $_cdir/MarkupSafe-1.1.1.tar.gz -C $TMPDIR
+cd $TMPDIR/MarkupSafe-1.1.1/ && python setup.py build && python setup.py install
+
+
 #### import jinja2
 echoinfo "installing Jinja2-2.11.2.tar.gz"
 tar -zxf $_cdir/Jinja2-2.11.2.tar.gz -C $TMPDIR
@@ -85,12 +91,6 @@ cd $TMPDIR/scandir-1.10.0/ && python setup.py build && python setup.py install
 
 tar -zxf $_cdir/pathlib2-2.3.5.tar.gz -C $TMPDIR
 cd $TMPDIR/pathlib2-2.3.5/ && python setup.py build && python setup.py install
-
-
-#### from markupsafe import Markup,escape
-echoinfo "installing MarkupSafe-1.1.1"
-tar -zxf $_cdir/MarkupSafe-1.1.1.tar.gz -C $TMPDIR
-cd $TMPDIR/MarkupSafe-1.1.1/ && python setup.py build && python setup.py install
 
 
 #### do cleanup
