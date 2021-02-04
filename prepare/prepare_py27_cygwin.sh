@@ -1,11 +1,11 @@
 #!/bin/bash
 #
-# @file: preinstall.sh
+# @file: prepare_py27_cygwin.sh
 #
 #   prepare for python2.7 on cygwin64
 #
 # @create: 2021-01-06 15:19:12
-# @update: 2021-01-16 18:01:12
+# @update: 2021-02-04 18:01:12
 #
 #######################################################################
 # NOTE: readlink -f not support by MaxOS-X
@@ -91,6 +91,15 @@ cd $TMPDIR/scandir-1.10.0/ && python setup.py build && python setup.py install
 
 tar -zxf $_cdir/pathlib2-2.3.5.tar.gz -C $TMPDIR
 cd $TMPDIR/pathlib2-2.3.5/ && python setup.py build && python setup.py install
+
+
+#### pyparsing, packaging
+echoinfo "installing pyparsing-2.4.7, packaging-20.9"
+tar -zxf $_cdir/pyparsing-2.4.7.tar.gz -C $pkgtmpdir
+cd $pkgtmpdir/pyparsing-2.4.7/ && python setup.py build && sudo python setup.py install
+
+tar -zxf $_cdir/packaging-20.9.tar.gz -C $pkgtmpdir
+cd $pkgtmpdir/packaging-20.9/ && python setup.py build && sudo python setup.py install
 
 
 #### do cleanup

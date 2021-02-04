@@ -1,4 +1,4 @@
-# install-ansible
+# ansible
 
 [Ansible Documentation](https://docs.ansible.com/ansible/latest/)
 
