@@ -48,6 +48,19 @@ fi
 
 pkgtmpdir=$(mktemp -d /tmp/tmp.XXXXXXXXXX) || exit 1
 
+echowarn "installing packages before ansible installation"
+echowarn "[1] https://pypi.org/project/pycrypto/"
+echowarn "[2] https://pypi.org/project/ecdsa/"
+echowarn "[3] https://pypi.org/project/PyNaCl"
+echowarn "[4] https://pypi.org/project/cffi/"
+echowarn "[5] https://pypi.org/project/pycparser/"
+echowarn "[6] https://pypi.org/project/cryptography/"
+echowarn "[7] https://pypi.org/project/bcrypt/"
+echowarn "[8] https://pypi.org/project/paramiko/"
+echowarn "[9] https://pypi.org/project/simplejson/"
+
+echowarn "如果安装完毕请注释掉下面的行, 然后再次执行安装!"
+exit 1
 
 #### ansible-base-2.10.5.tar.gz
 echoinfo "installing ansible-base-2.10.5"
