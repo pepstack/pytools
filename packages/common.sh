@@ -2,11 +2,11 @@
 #
 # @file
 #
-# @author: 350137278@qq.com
+# @author: cheungmine@qq.com
 #
 # @create: 2014-12-18
 #
-# @update: 2018-10-25
+# @update: 2021-02-18
 #
 ########################################################################
 # Error Codes:
@@ -21,10 +21,10 @@ ERR_NOT_ROOT=100
 # file is already existed
 ERR_FILE_EXISTED=200
 
-# Treat unset variables as an error (set -u / +u)
+# Treat unset variables as an error
 set -o nounset
 
-# Treat any error as exit (set -e / +e)
+# Treat any error as exit
 set -o errexit
 
 
@@ -64,6 +64,7 @@ function detect_color_support() {
         BC="\033[1;34m"
         PC="\033[1;35m"
         CC="\033[1;36m"
+        WC="\033[1;37m"
         EC="\033[0m"
     else
         DC=""
@@ -73,6 +74,7 @@ function detect_color_support() {
         BC=""
         PC=""
         CC=""
+        WC=""
         EC=""
     fi
 }
@@ -324,6 +326,34 @@ function validate_ipv4() {
 
     # good ipv4 address
     return 0
+}
+
+
+# findstrindex "$(mount -l)" "/dev/sdb "
+function findstrindex()
+{
+    echo "$1" | awk -F '\n' '{for (i=1;i<=NF;i++) print $i}' | grep -n "$2" | cut -d ":" -f 1
+}
+
+
+function blkid_get_dev()
+{
+    local fieldstr=$(echo "`blkid $1`" | sed 's/\"//g' | awk '{print $1}')
+    echo ${fieldstr%:}
+}
+
+
+function blkid_get_uuid()
+{
+    local fieldstr=$(echo "`blkid $1`" | sed 's/\"//g' | awk '{print $2}')
+    echo ${fieldstr#*UUID=}
+}
+
+
+function blkid_get_type()
+{
+    local fieldstr=$(echo "`blkid $1`" | sed 's/\"//g' | awk '{print $3}')
+    echo ${fieldstr#*TYPE=}
 }
 
 

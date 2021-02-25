@@ -2,10 +2,10 @@
 #
 # @file: ansible_py27_linux.sh
 #
-#   install ansible for python2.7 on linux
+#   install ansible for python2.7 on linux (el6,el7)
 #
 # @create: 2021-02-04 18:01:12
-# @update: 2021-02-04 18:01:12
+# @update: 2021-02-25 19:21:12
 #
 #######################################################################
 # NOTE: readlink -f not support by MaxOS-X
@@ -52,13 +52,13 @@ pkgtmpdir=$(mktemp -d /tmp/tmp.XXXXXXXXXX) || exit 1
 #### ansible-base-2.10.5.tar.gz
 echoinfo "installing ansible-base-2.10.5"
 tar -zxf $_cdir/ansible-base-2.10.5.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/ansible-base-2.10.5/ && python setup.py build && sudo python setup.py install
+cd $pkgtmpdir/ansible-base-2.10.5/ && python setup.py build && python setup.py install
 
 
 #### ansible-2.10.6-fix.tar.gz
 echoinfo "installing ansible-2.10.6"
 tar -zxf $_cdir/ansible-2.10.6-fix.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/ansible-2.10.6-fix/ && python setup.py build && sudo python setup.py install
+cd $pkgtmpdir/ansible-2.10.6-fix/ && python setup.py build && python setup.py install
 
 
 #### do cleanup
