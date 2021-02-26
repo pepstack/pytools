@@ -51,7 +51,7 @@ pkgtmpdir=$(mktemp -d /tmp/tmp.XXXXXXXXXX) || exit 1
 echowarn "installing libffi before ansible installation"
 echowarn "[0] yum install -y libffi libffi-devel"
 
-echowarn "请手动升级 OpenSSL 完毕后, 注释掉下面的行, 然后再次执行安装!"
+echowarn "请手动升级 OpenSSL (see: install_openssl.md) 完毕后, 注释掉下面的行, 然后再次执行安装!"
 exit 1
 
 echoinfo "(centos6.5 with python2.7) install dependencies for ansible..."
