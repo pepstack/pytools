@@ -65,54 +65,15 @@ echoinfo "installing yaml-0.2.5"
 tar -zxf $_cdir/yaml-0.2.5.tar.gz -C $pkgtmpdir
 cd $pkgtmpdir/yaml-0.2.5/ && ./configure && make && make install
 
-
-#### http://pyyaml.org/download/pyyaml/PyYAML-5.3.1.tar.gz
-echoinfo "installing PyYAML-5.3.1"
-tar -zxf $_cdir/PyYAML-5.3.1.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/PyYAML-5.3.1/ && python setup.py build && python setup.py install
-
-
-#### import setuptools
-echoinfo "installing setuptools-40.0.0"
-tar -zxf $_cdir/setuptools-40.0.0.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/setuptools-40.0.0/ && python setup.py build && python setup.py install
-
-
-#### from markupsafe import Markup,escape
-echoinfo "installing MarkupSafe-1.1.1"
-tar -zxf $_cdir/MarkupSafe-1.1.1.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/MarkupSafe-1.1.1/ && python setup.py build && python setup.py install
-
-
-#### import jinja2
-echoinfo "installing Jinja2-2.11.2.tar.gz"
-tar -zxf $_cdir/Jinja2-2.11.2.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/Jinja2-2.11.2/ && python setup.py build && python setup.py install
-
-
-#### import six.moves.urllib as urllib
-echoinfo "installing six-1.15.0"
-tar -zxf $_cdir/six-1.15.0.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/six-1.15.0/ && python setup.py build && python setup.py install
-
-
-#### from pathlib2 import Path
-echoinfo "installing scandir-1.10.0, pathlib2-2.3.5"
-tar -zxf $_cdir/scandir-1.10.0.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/scandir-1.10.0/ && python setup.py build && python setup.py install
-
-tar -zxf $_cdir/pathlib2-2.3.5.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/pathlib2-2.3.5/ && python setup.py build && python setup.py install
-
-
-#### pyparsing, packaging
-echoinfo "installing pyparsing-2.4.7, packaging-20.9"
-tar -zxf $_cdir/pyparsing-2.4.7.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/pyparsing-2.4.7/ && python setup.py build && python setup.py install
-
-tar -zxf $_cdir/packaging-20.9.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/packaging-20.9/ && python setup.py build && python setup.py install
-
+pyinstall_pkg "PyYAML-5.3.1" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "setuptools-40.0.0" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "MarkupSafe-1.1.1" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "Jinja2-2.11.2" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "six-1.15.0" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "scandir-1.10.0" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "pathlib2-2.3.5" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "pyparsing-2.4.7" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "packaging-20.9" "$_cdir" "$pkgtmpdir"
 
 #### do cleanup
 echoinfo "remove tmp dir: $pkgtmpdir"
