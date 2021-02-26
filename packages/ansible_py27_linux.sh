@@ -48,47 +48,36 @@ fi
 
 pkgtmpdir=$(mktemp -d /tmp/tmp.XXXXXXXXXX) || exit 1
 
-echowarn "installing packages before ansible installation"
+echowarn "installing libffi before ansible installation"
 echowarn "[0] yum install -y libffi libffi-devel"
 
-# TODO: 升级 OpenSSL
-
-echowarn "[1: ecdsa-0.16.1.tar.gz] https://pypi.org/project/ecdsa/"
-echowarn "[2: pycrypto-2.6.1.tar.gz] https://pypi.org/project/pycrypto/"
-echowarn "[3: pycparser-2.20.tar.gz] https://pypi.org/project/pycparser/"
-echowarn "[4: cffi-1.14.5.tar.gz] https://pypi.org/project/cffi/"
-echowarn "[5: simplejson-3.17.2.tar.gz] https://pypi.org/project/simplejson/"
-echowarn "[6: ipaddress-1.0.23.tar.gz] https://pypi.org/project/ipaddress/"
-echowarn "[7: enum34-1.1.10.tar.gz] https://pypi.org/project/enum34/"
-echowarn "[8: cryptography-2.9.2.tar.gz] https://pypi.org/project/cryptography/"
-echowarn "[9: wheel-0.30.0.tar.gz] https://pypi.org/project/wheel/"
-echowarn "[10: PyNaCl-1.4.0.tar.gz] https://pypi.org/project/PyNaCl"
-echowarn "[11: bcrypt-3.1.7.tar.gz] https://pypi.org/project/bcrypt/"
-echowarn "[12: paramiko-2.7.2.tar.gz] https://pypi.org/project/paramiko/"
-
-echowarn "[ansible-base-2.10.5.tar.gz]"
-echowarn "[ansible-2.10.6-fix.tar.gz]"
-
-echowarn "如果安装完毕请注释掉下面的行, 然后再次执行安装!"
+echowarn "请手动升级 OpenSSL 完毕后, 注释掉下面的行, 然后再次执行安装!"
 exit 1
 
-#### ansible-base-2.10.5.tar.gz
-echoinfo "installing ansible-base-2.10.5"
-tar -zxf $_cdir/ansible-base-2.10.5.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/ansible-base-2.10.5/ && python setup.py build && python setup.py install
+echoinfo "(centos6.5 with python2.7) install dependencies for ansible..."
+pyinstall_pkg "ecdsa-0.16.1" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "pycrypto-2.6.1" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "pycparser-2.20" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "cffi-1.14.5" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "simplejson-3.17.2" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "ipaddress-1.0.23" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "enum34-1.1.10" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "cryptography-2.9.2" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "wheel-0.30.0" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "PyNaCl-1.4.0" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "bcrypt-3.1.7" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "paramiko-2.7.2-fix" "$_cdir" "$pkgtmpdir"
+echoinfo "dependencies for ansible installed success."
 
-
-#### ansible-2.10.6-fix.tar.gz
-echoinfo "installing ansible-2.10.6"
-tar -zxf $_cdir/ansible-2.10.6-fix.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/ansible-2.10.6-fix/ && python setup.py build && python setup.py install
-
+echoinfo "install ansible..."
+pyinstall_pkg "ansible-base-2.10.5" "$_cdir" "$pkgtmpdir"
+pyinstall_pkg "ansible-2.10.6-fix" "$_cdir" "$pkgtmpdir"
+echoinfo "ansible installed success."
 
 #### do cleanup
 echoinfo "remove tmp dir: $pkgtmpdir"
 cd $_cdir
 rm -rf "$pkgtmpdir"
-
 
 #### create default inventory
 inventory_file="/etc/ansible/hosts"
@@ -103,7 +92,16 @@ else
 	echo "`hostname`  ansible_ssh_host=127.0.0.1  ansible_ssh_port=22" >> "$inventory_file"
 fi
 
+echowarn "(centos6.5 with python2.7) fix ssh error"
+echo "[ssh_connection]" > /etc/ansible/ansible.cfg
+echo "ssh_args=" >> /etc/ansible/ansible.cfg
+
+echowarn "(centos6.5 with python2.7) fix paramiko:"
+echo "paramiko-2.7.2-fix/transport.py:120"
+
 # test ansible
 ansible self -m ping
+
+# 对 centos6.5+python2.7
 
 exit 0

@@ -140,6 +140,20 @@ function chk_root() {
 
 
 #***********************************************************
+# pyinstall_pkg
+#   python build install PKG
+#
+# Example:
+#   pyinstall_pkg "ecdsa-0.16.1" "$_cdir" "$pkgtmpdir"
+#***********************************************************
+function pyinstall_pkg() {
+    echoinfo "installing python package: ""$1"
+    tar -zxf "$2"/"$1".tar.gz -C "$3"
+    cd "$3"/"$1"/ && python setup.py build && python setup.py install
+}
+
+
+#***********************************************************
 # read_cfg
 #   read section and key from ini file
 #
