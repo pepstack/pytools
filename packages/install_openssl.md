@@ -16,7 +16,7 @@
     # build static and dynamic:
     $ CFLAGS="-fPIC" ./configure --prefix=/usr/local
 
-    $ make && sudo make install
+    $ make clean && make && sudo make install
     
 ## openssl-1.1.1g
 
@@ -24,7 +24,7 @@
 
     $ ./config --prefix=/usr/local --openssldir=/usr/local/ssl
 
-    $ make && sudo make install
+    $ make clean && make && sudo make install
 
     $ ./config shared --prefix=/usr/local --openssldir=/usr/local/ssl
 
