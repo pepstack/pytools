@@ -2,7 +2,7 @@
 #-*- coding: UTF-8 -*-
 #
 # error.py
-#   user defined error
+#   user defined error for python2.x
 #
 # init created: 2016-05-12
 # last updated: 2019-09-20

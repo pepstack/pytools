@@ -6,17 +6,15 @@
 #
 # @create: 2015-12-02
 #
-# @update: 2021-01-06
+# @update: 2021-04-28
 #
 #######################################################################
 from __future__ import print_function
 import os, errno, sys, shutil, inspect, select, commands
-import signal, threading
+import signal, threading, collections
 import codecs, tempfile, fileinput
 
-import hashlib
-import itertools
-import binascii
+import hashlib, itertools, binascii
 
 import time, datetime
 from datetime import datetime, timedelta
@@ -42,7 +40,7 @@ def info2(s):
     print('\033[34m[INFO] %s\033[0m' % s)
 
 def warn(s):
-    print('\033[33m[WARNING] %s\033[0m' % s)
+    print('\033[33m[WARN] %s\033[0m' % s)
 
 def except_print(s = None):
     (errtype, errmsg, traceback) = sys.exc_info()
@@ -51,18 +49,141 @@ def except_print(s = None):
     else:
         error("{}: {}".format(s, errtype, errmsg))
 
+def pretty_dict(d, indent=2, ensure_ascii=False, sort_keys=True, separators=(',', ': ')):
+    import json
+    return json.dumps(d, indent=indent, ensure_ascii=ensure_ascii, sort_keys=sort_keys, separators=separators)
 
-class DotDict(dict):
-    def __init__(self, *args, **kwargs):
-        dict.__init__(self, *args, **kwargs)
-        self.__dict__ = self
+def print_object(obj):
+    print("%r: %s = {\n%s\n}\n" % (
+            obj,
+            obj.__class__,
+            '\n'.join(['  %s: %s' % item for item in obj.__dict__.items()]))
+        )
 
-    def allowDot(self, state=True):
-        if state:
-            self.__dict__ = self
-        else:
-            self.__dict__ = dict()
 
+def list_append(l, elem):
+    l.append(elem)
+    return l[-1]
+
+
+def list_addnot(l, elem):
+    if elem not in l:
+        l.append(elem)
+        return True
+    else:
+        return False
+
+
+def list_addnot_list(l, elems):
+    for elem in elems:
+        list_addnot(l, elem)
+
+
+def list_addnot_sort(l, elem):
+    if elem not in l:
+        l.append(elem)
+        l.sort()
+        return True
+    else:
+        return False
+
+
+def dictlist_add(dl, pair):
+    added = False
+    try:
+        (key, elem) = pair
+        if elem not in dl[key]:
+            dl[key].append(elem)
+            added = True
+    except KeyError:
+        dl[key] = [elem]
+        added = True
+    return added
+
+
+def dictlist_add_sort(dl, pair):
+    added = False
+    try:
+        (key, elem) = pair
+        if elem not in dl[key]:
+            dl[key].append(elem)
+            added = True
+    except KeyError:
+        dl[key] = [elem]
+        added = True
+    finally:
+        dl[key].sort()
+        pass
+    return added
+
+
+def dict_to_list(d):
+    kl = d.keys()
+    vl = d.values()
+    l = [ (k, v) for k, v in zip(kl, vl) ]
+    return l
+
+
+def split_strip(l, div=","):
+    if l is None:
+        return None
+    elif isinstance(l, str):
+        arr = l.split(div)
+        return [s.strip() for s in arr if s.strip()]
+    elif isinstance(l, list):
+        return [s.strip() for s in l if s.strip()]
+    elif isinstance(l, dict):
+        return dict_to_list(l)
+    else:
+        arr = str(l).split(div)
+        return [s.strip() for s in arr if s.strip()]
+
+
+def kvlist_sorted(l):
+    d = collections.OrderedDict()
+    if isinstance(l, list):
+        for el in l:
+            if isinstance(el, dict):
+                k, v = el.items()[0]
+                d[k] = v
+            else:
+               d[el] = "N/A"
+    elif l is not None:
+        keys = sorted(l.keys())
+        for k in keys:
+            d[k] = l[k]
+    return zip(d.keys(), d.values())
+
+
+def replace_var(s, varsdict, begintag = "{{", endtag = "}}"):
+    try:
+        var = s[s.index(begintag) + len(begintag) : s.index(endtag)]
+        rep = varsdict[var]
+        s = s.replace("%s%s%s" % (begintag, var, endtag), rep)
+        return replace_var(s, varsdict, begintag, endtag)
+    except (ValueError, KeyError, TypeError, AttributeError):
+        return s
+
+
+# dl = { "k1": ["v1", "v2", "v3"], "k2": [9, 5, 0], ... }
+def dict_vlist_add(dl, k, v):
+    try:
+        vl = dl[k]
+    except KeyError:
+        dl[k] = []
+        vl = dl[k]
+    finally:
+        list_addnot(vl, v)
+
+
+def dict_dict_vlist_add(ddl, dk, k, v):
+    try:
+        dl = ddl[dk]
+    except KeyError:
+        ddl[dk] = {}
+        dl = ddl[dk]
+    finally:
+        dict_vlist_add(dl, k, v)
 
 #######################################################################
 
@@ -270,12 +391,12 @@ def init_parser_group(**kargs):
     usage = kargs.get('usage', '%prog [options] ...')
     group_options = kargs.get('group_options')
 
-    profile = "\033[32m****************************************************************\033[32;m\n" + \
-        "\033[32m* %-60s *\033[32;m\n" % (appname + " version: " + appver)
+    profile  = "\033[32m************************************************************************\033[32;m\n" + \
+        "\033[32m* %-72s *\033[32;m\n" % (appname + " version: " + appver)
     helps = apphelp.split('\n')
     for helpstr in helps:
-        profile += "\033[32m* %-60s *\033[32;m\n" % helpstr
-    profile += "\033[32m****************************************************************\033[32;m"
+        profile += "\033[32m* %-72s *\033[32;m\n" % helpstr
+    profile += "\033[32m************************************************************************\033[32;m"
 
     parser = optparse.OptionParser(usage=usage,version="%prog " + appver)
 
@@ -292,11 +413,19 @@ def init_parser_group(**kargs):
     if group_options:
         yamlmod = check_import_module("yaml")
 
-        options_files = group_options.split(",")
+        if isinstance(group_options, list):
+            options_files = group_options
+        elif isinstance(group_options, tuple):
+            options_files = list(group_options)
+        elif isinstance(group_options, str):
+            options_files = group_options.split(",")
+        else:
+            raise TypeError("group_options")
 
         for options_file in options_files:
 
-            fd = open_file(group_options, 'r')
+            fd = open_file(options_file, 'r')
+
             with fd:
                 data = fd.read()
                 optscfg = yamlmod.load(data, Loader=yamlmod.FullLoader)
@@ -332,15 +461,17 @@ def init_parser_group(**kargs):
 
                             helpstr = optcfg.get('help', None)
                             if helpstr:
-                                helpstr = helpstr.replace("$APPNAME", appname).replace("$APPVER", appver)
+                                helpstr = helpstr.replace("$APPNAME", appname).replace("$APPVER", appver).replace("$APPHOME", apphome)
 
                             if action == "store_true":
                                 metavar = optcfg.get('metavar', False)
                             else:
                                 metavar = optcfg.get('metavar', optarg.split("-")[-1].upper())
 
-                            if not defval is None:
+                            if defval is not None:
                                 helpstr += " ('%s' default)" % str(defval)
+                            else:
+                                helpstr += " ('None' default)"
 
                             args = optarg.split(' ')
                             if len(args) == 2:
@@ -381,6 +512,13 @@ def print_options_attrs2(options, attrs2):
         attrval = getattr(options, attr)
         info_pair(display, attrval)
         pass
+
+
+def options_getattr_default(options, attrname, defval):
+    try:
+        return getattr(options, attrname)
+    except AttributeError:
+        return defval
 
 #######################################################################
 
@@ -500,7 +638,7 @@ def read_file_content_utf8(pathfile, tabreplace = "    ", rtrimspace = False):
                 line = line.rstrip('\n')
                 b = len(line)
                 line = line.rstrip()
-                
+
                 while b < a:
                     b += 1
                     line += '\n'
@@ -511,6 +649,67 @@ def read_file_content_utf8(pathfile, tabreplace = "    ", rtrimspace = False):
             fd.close()
         pass
     return content
+
+
+def read_properties(pathfile, encoding='utf-8'):
+    fd, props, comments, prop = codecs.open(pathfile, mode='r+b', encoding=encoding), [], [], None
+    try:
+        for l in fd.readlines():
+            line = l.strip()
+            if prop is None:
+                if line.startswith('#'):
+                    # ignore comment
+                    comments.append(line)
+                    continue
+                else:
+                    eqat = line.find('=')
+                    if eqat == -1:
+                        # name => []
+                        prop = (line.rstrip('\\').strip(), [])
+                    else:
+                        # name => value
+                        prop = (line[0: eqat].strip(), [line[eqat + 1: ].rstrip('\\').strip()])
+                    pass
+            else:
+                (n, vl) = prop
+                vl.append(line.rstrip('\\').strip())
+                prop = (n, vl)
+
+            if not line.endswith('\\'):
+                props.append(prop)
+                prop = None
+        return props, comments
+    finally:
+        fd.close()
+
+
+def remove_properties(properties, propname):
+    if properties is None:
+        return None
+    else:
+        for prop in properties:
+            (name, _) = prop
+            if propname == name:
+                properties.remove(prop)
+                return prop
+        return None
+
+
+def upsert_properties(properties, prop):
+    (name, _), ret = prop, []
+    if properties is None:
+        ret = [prop]
+    else:
+        added = False
+        for el in properties:
+            if el[0] == name:
+                ret.append(prop)
+                added = True
+            else:
+                ret.append(el)
+        if not added:
+            ret.append(prop)
+    return ret
 
 
 def relay_read_messages(pathfile, posfile, stopfile, chunk_size=65536, read_maxsize=16777216, message_separator='\n'):
@@ -566,6 +765,28 @@ def relay_read_messages(pathfile, posfile, stopfile, chunk_size=65536, read_maxs
     return (messages, last_position, position)
 
 
+def write_lines(wfd, lines, encoding=None):
+    if encoding:
+        for l in lines:
+            wfd.write(unicode(l, encoding))
+    else:
+        for l in lines:
+            wfd.write(l)
+    pass
+
+
+def writeln_lines(wfd, lines, encoding=None):
+    if encoding:
+        for l in lines:
+            wfd.write(unicode(l, encoding))
+            wfd.write(unicode('\n', encoding))
+    else:
+        for l in lines:
+            wfd.write(l)
+            wfd.write('\n')
+    pass
+
+
 def write_file(fd, encoding, format = None, *arg):
     if format:
         fd.write(unicode((format % arg), encoding))
@@ -615,20 +836,21 @@ def add_bom_header(filename):
         f.close()
 
 
-# create file and write to it
+# deprecated: create file and write to it
 #
-def create_output_file(outfile, output_callback, param = None, fileExistedAsError=True, verboseInfo=False):
+def create_output_file(outfile, output_callback, param = None, fileExistsError=True, verboseInfo=False):
     import os, tempfile, codecs, shutil
+    warn("create_output_file() is deprecated. please use create_outfile() !")
     # create temp file
     tmpfd = tempfile.NamedTemporaryFile(delete = False)
     tmpfname = tmpfd.name
     tmpfd.close()
 
     try:
-        if fileExistedAsError:
+        if fileExistsError:
             # failed if file existed
             if os.path.isfile(outfile):
-                raise Exception(-1001, "File already existed: %s" % outfile)
+                raise OSError(-1001, "FileExistsError: %s" % outfile)
 
         # create path if not exists
         path = os.path.dirname(outfile);
@@ -652,10 +874,66 @@ def create_output_file(outfile, output_callback, param = None, fileExistedAsErro
             if verboseInfo:
                 info("create dir: %s" % os.path.dirname(outfile))
             pass
-    except Exception as e:
-        error("create_output_file() error(%d): %s" % (e.args[0], e.args[1]))
     finally:
         os.unlink(tmpfname)
+
+
+# create file and write to it
+#
+def create_outfile(outfile, write_callback, userarg = None, **kvargs):
+    import os, tempfile, codecs, shutil
+
+    # configs
+    fileExistsAsError = kvargs.get('fileExistsAsError', False)
+    makedirsIfNotExists = kvargs.get('makedirsIfNotExists', True)
+    charsetEncoding = kvargs.get('charsetEncoding', 'utf-8')
+    chunkSizeBytes = kvargs.get('chunkSizeBytes', 4096)
+
+    # create temp file
+    tmpfd = tempfile.NamedTemporaryFile(delete = False)
+    tmpfname = tmpfd.name
+    tmpfd.close()
+
+    try:
+        if os.path.isfile(outfile) and fileExistsAsError == True:
+            raise OSError(-1001, "FileAlreadyExists: %s" % outfile)
+
+        path = os.path.dirname(outfile)
+        if not os.path.exists(path):
+            if makedirsIfNotExists == True:
+                os.makedirs(path)
+            else:
+                raise OSError(-1002, "PathNotExists: %s" % path)
+
+        # write data to tmpfname
+        try:
+            # open tmpfile to write to
+            if charsetEncoding is None:
+                tmpfd = open(tmpfname, mode='w+b')
+            else:
+                tmpfd = open_file(tmpfname, mode='w+b', encoding=charsetEncoding)
+
+            # call function to write tmpfile
+            write_callback(tmpfd, userarg)
+        finally:
+            tmpfd.close()
+            pass
+
+        # copy tmpfile to outfile
+        try:
+            tmpfd, outfd = open(tmpfname, mode='r+b'), open(outfile, mode='w+b')
+            chunk = tmpfd.read(chunkSizeBytes)
+            while chunk:
+                outfd.write(chunk)
+                chunk = tmpfd.read(chunkSizeBytes)
+        finally:
+            tmpfd.close()
+            outfd.close()
+            pass
+    finally:
+        # always drop tmpfname
+        os.unlink(tmpfname)
+        pass
 
 
 # 复制目录树, 并根据设置替换目标文件夹. 参考下面的例子:
@@ -717,6 +995,7 @@ def copydirtree(srcdir, dstdir, pairCfg = None, verbose = True, copyfile_cb = co
         else:
             copydirtree(pf, df, pairCfg, verbose, copyfile_cb, cbarg)
     pass
+
 
 #######################################################################
 
@@ -780,7 +1059,7 @@ def rc4(data, key):
     return ''.join(out)
 
 
-def md5sum(pathfile):
+def md5sum_file(pathfile):
     with open(pathfile, 'rb') as fh:
         m = hashlib.md5()
         while True:
@@ -790,3 +1069,6 @@ def md5sum(pathfile):
             m.update(chunk)
         return m.hexdigest()
 
+
+def md5sum_str(s, encoding='utf8'):
+    return hashlib.md5(s.encode(encoding)).hexdigest()

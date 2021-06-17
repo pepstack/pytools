@@ -46,7 +46,7 @@ if [ $pyver != "2.7" ]; then
 fi
 
 #### fix bug: pyconfig.h not found
-echoinfo "Make sure you have python-devel installed !"
+echoinfo "Make sure you have python?-devel installed ! (use setup-x86_64.exe for installation: python2-devel)"
 
 #### http://pyyaml.org/download/libyaml/yaml-0.2.5.tar.gz
 echoinfo "installing yaml-0.2.5"
@@ -95,11 +95,11 @@ cd $TMPDIR/pathlib2-2.3.5/ && python setup.py build && python setup.py install
 
 #### pyparsing, packaging
 echoinfo "installing pyparsing-2.4.7, packaging-20.9"
-tar -zxf $_cdir/pyparsing-2.4.7.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/pyparsing-2.4.7/ && python setup.py build && sudo python setup.py install
+tar -zxf $_cdir/pyparsing-2.4.7.tar.gz -C $TMPDIR
+cd $TMPDIR/pyparsing-2.4.7/ && python setup.py build && python setup.py install
 
-tar -zxf $_cdir/packaging-20.9.tar.gz -C $pkgtmpdir
-cd $pkgtmpdir/packaging-20.9/ && python setup.py build && sudo python setup.py install
+tar -zxf $_cdir/packaging-20.9.tar.gz -C $TMPDIR
+cd $TMPDIR/packaging-20.9/ && python setup.py build && python setup.py install
 
 
 #### do cleanup
