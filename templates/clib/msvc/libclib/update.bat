@@ -1,0 +1,49 @@
+@ECHO OFF
+set LIBPROJECT=libclib
+
+setlocal enabledelayedexpansion
+for /f %%a in (%~dp0..\..\src\clib\VERSION) do (
+    echo VERSION: %%a
+    set LIBVER=%%a
+    goto :libver
+)
+:libver
+echo update for: %LIBPROJECT%-%LIBVER%
+
+
+if "%1" == "x64_debug" (
+	copy "%~dp0..\..\src\clib\clib_api.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\clib\"
+	copy "%~dp0..\..\src\clib\clib_def.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\clib\"
+	copy "%~dp0..\..\src\common\unitypes.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\common\"
+
+	copy "%~dp0target\x64\Debug\%LIBPROJECT%.lib" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\lib\win64\Debug\"
+	copy "%~dp0target\x64\Debug\%LIBPROJECT%.pdb" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\lib\win64\Debug\"
+)
+
+
+if "%1" == "x64_release" (
+	copy "%~dp0..\..\src\clib\clib_api.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\clib\"
+	copy "%~dp0..\..\src\clib\clib_def.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\clib\"
+	copy "%~dp0..\..\src\common\unitypes.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\common\"
+
+	copy "%~dp0target\x64\Release\%LIBPROJECT%.lib" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\lib\win64\Release\"
+)
+
+
+if "%1" == "x86_debug" (
+	copy "%~dp0..\..\src\clib\clib_api.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\clib\"
+	copy "%~dp0..\..\src\clib\clib_def.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\clib\"
+	copy "%~dp0..\..\src\common\unitypes.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\common\"
+
+	copy "%~dp0target\Win32\Debug\%LIBPROJECT%.lib" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\lib\win86\Debug\"
+	copy "%~dp0target\Win32\Debug\%LIBPROJECT%.pdb" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\lib\win86\Debug\"
+)
+
+
+if "%1" == "x86_release" (
+	copy "%~dp0..\..\src\clib\clib_api.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\clib\"
+	copy "%~dp0..\..\src\clib\clib_def.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\clib\"
+	copy "%~dp0..\..\src\common\unitypes.h" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\include\common\"
+
+	copy "%~dp0target\Win32\Release\%LIBPROJECT%.lib" "%~dp0..\..\%LIBPROJECT%-%LIBVER%\lib\win86\Release\"
+)

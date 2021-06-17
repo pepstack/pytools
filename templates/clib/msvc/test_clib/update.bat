@@ -1,0 +1,37 @@
+@ECHO OFF
+set LIBPROJECT=libclib
+set APPPROJECT=test_clib
+
+setlocal enabledelayedexpansion
+for /f %%a in (%~dp0..\..\src\apps\test_clib\VERSION) do (
+    echo VERSION: %%a
+    set APPVER=%%a
+    goto :APPVER
+)
+:APPVER
+echo update for: %APPPROJECT%-%APPVER%
+
+set x64AppDistDbgDir="%~dp0..\..\dist-apps\Debug\win64\%APPPROJECT%-%APPVER%\bin"
+set x64AppDistRelsDir="%~dp0..\..\dist-apps\Release\win64\%APPPROJECT%-%APPVER%\bin"
+set x86AppDistDbgDir="%~dp0..\..\dist-apps\Debug\win86\%APPPROJECT%-%APPVER%\bin"
+set x86AppDistRelsDir="%~dp0..\..\dist-apps\Release\win86\%APPPROJECT%-%APPVER%\bin"
+
+
+if "%1" == "x64_debug" (
+	copy "%~dp0target\x64\Debug\%APPPROJECT%.exe" "%x64AppDistDbgDir%\"
+)
+
+
+if "%1" == "x64_release" (
+	copy "%~dp0target\x64\Release\%APPPROJECT%.exe" "%x64AppDistRelsDir%\"
+)
+
+
+if "%1" == "x86_debug" (
+	copy "%~dp0target\Win32\Debug\%APPPROJECT%.exe" "%x86AppDistDbgDir%\"
+)
+
+
+if "%1" == "x86_release" (
+	copy "%~dp0target\Win32\Release\%APPPROJECT%.exe" "%x86AppDistRelsDir%\"
+)

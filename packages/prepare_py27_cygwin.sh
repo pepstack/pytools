@@ -73,6 +73,7 @@ cd $TMPDIR/MarkupSafe-1.1.1/ && python setup.py build && python setup.py install
 
 
 #### import jinja2
+echowarn "warning 'async def ...' can be ignored. DO NOT USING async FUNCTIONALITY!"
 echoinfo "installing Jinja2-2.11.2.tar.gz"
 tar -zxf $_cdir/Jinja2-2.11.2.tar.gz -C $TMPDIR
 cd $TMPDIR/Jinja2-2.11.2/ && python setup.py build && python setup.py install

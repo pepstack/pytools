@@ -15,9 +15,9 @@ A set of devops tools for python2.7.x.
 
 	$ sudo sh ./preinstall_py27_linux.sh
 
-- Windows (Only for cygwin64)
+- Windows7, 10 (Only for cygwin64)
 
-	If has errors, install python2-devel, python27-devel for cygwin first!
+	If has errors, install python2-devel or python27-devel for cygwin first (using setup-x86_64.exe).
 
 	If an installation of usb0 driver required when running setup-x86_64.exe for cygwin, you could found it in below zip:
 
@@ -55,9 +55,9 @@ NOTE: default config yaml file for sample.py (sample.yaml) lies at:
 	./tools/options/sample.yaml
 
 
-## Add your script file
+## Add yourself tool script
 
-1) make a copy of sample.py and sample.yaml;
+1) make a copy of files 'sample.py' and 'sample.yaml';
 
 2) rename them as you want;
 
