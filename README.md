@@ -1,10 +1,10 @@
 # pytools
 
-A set of devops scripts tools for python2.7.x.
+A set of devops tools for python2.7.x.
 
 这是一套方便 Python2.7.x 脚本开发的工具箱。简单的复制几个文件，改个名字，就提供了命令行参数、日志等常用功能，大大提高开发速度。
 
-请参考 scripts/sample.py。默认的程序脚本 sample.py 使用同名的配置文件 options/sample.yaml。
+请参考 tools/sample.py。默认的程序脚本 sample.py 使用同名的配置文件 options/sample.yaml。
 
 
 ## Prepare for python2.7
@@ -32,7 +32,7 @@ A set of devops scripts tools for python2.7.x.
 
 ## Run sample
 
-	$ cd scripts/
+	$ cd tools/
 
 	$ ./sample.py
 
@@ -42,8 +42,8 @@ A set of devops scripts tools for python2.7.x.
 
 	$ ./sample.py
 
-		[2021-01-06 18:44:58 - evntlog.py:260 - init_logger] <9009:INFO> load logging.config: /cygdrive/c/Users/cheungmine/Workspace/github.com/pytools/scripts/config/logger.config
-		[2021-01-06 18:44:58 - logger.py:45 - set_logger] <9009:FORCE> logging config : /cygdrive/c/Users/cheungmine/Workspace/github.com/pytools/scripts/config/logger.config
+		[2021-01-06 18:44:58 - evntlog.py:260 - init_logger] <9009:INFO> load logging.config: /cygdrive/c/Users/cheungmine/Workspace/github.com/pytools/tools/config/logger.config
+		[2021-01-06 18:44:58 - logger.py:45 - set_logger] <9009:FORCE> logging config : /cygdrive/c/Users/cheungmine/Workspace/github.com/pytools/tools/config/logger.config
 		[2021-01-06 18:44:58 - logger.py:46 - set_logger] <9009:FORCE> logger file    : /var/log/pytools-logs/sample-1.0.0/sample.log
 		[2021-01-06 18:44:58 - logger.py:47 - set_logger] <9009:FORCE> logger level   : DEBUG
 		[2021-01-06 18:44:58 - logger.py:48 - set_logger] <9009:FORCE> logger name    : main
@@ -52,7 +52,7 @@ A set of devops scripts tools for python2.7.x.
 
 NOTE: default config yaml file for sample.py (sample.yaml) lies at:
 
-	./scripts/options/sample.yaml
+	./tools/options/sample.yaml
 
 
 ## Add your script file
@@ -85,7 +85,7 @@ NOTE: default config yaml file for sample.py (sample.yaml) lies at:
 
 当运行 revise.py 指定这个文件的父目录，自动更新上面的文件头。
 
-	$ cd scripts/
+	$ cd tools/
 
 	$ ./revise.py -F cpp -P /path/to/mydir
 

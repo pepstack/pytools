@@ -33,6 +33,7 @@ APPHELP = "A python sample"
 # import your local modules
 import utils.utility as util
 import utils.evntlog as elog
+import utils.ddict as ddict
 
 from utils.error import try_except_log
 
@@ -44,7 +45,7 @@ osname = platform.system().lower()
 def main(parser):
     import utils.logger as logger
     (options, args) = parser.parse_args(args=None, values=None)
-    loggerConfig = util.DotDict(
+    loggerConfig = ddict.dotdict(
         logging_config = options.log_config,
         file = APPNAME + '.log',
         name = options.logger
