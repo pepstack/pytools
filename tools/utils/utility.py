@@ -968,6 +968,15 @@ def copydirtree(srcdir, dstdir, replaces = [], copyfile_cb = copyfile_cb_default
     pass
 
 
+def compress_targz(outputfile_targz, source_dir):
+    """
+    https://www.cnblogs.com/liangqihui/p/9219333.html
+    """
+    import tarfile
+    with tarfile.open(outputfile_targz, "w:gz") as tar:
+        tar.add(source_dir, arcname=os.path.basename(source_dir))
+
+
 #######################################################################
 
 def script_abspath(frame=inspect.currentframe()):

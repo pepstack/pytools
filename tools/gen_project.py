@@ -100,10 +100,12 @@ def main(parser):
     )
     logger_dictConfig = logger.set_logger(loggerConfig, options.log_path, options.log_level)
 
+    project_timestamp = util.nowtime('%Y%m%d.%H%M%S')
+
     # 模板根目录
     templateProjectDir = os.path.join(pytools_root, "templates", "%" + options.template + "%")
 
-    generateProjectDir = os.path.join(os.path.realpath(options.output_dir), options.project)
+    generateProjectDir = os.path.join(os.path.realpath(options.output_dir), options.project + "-" + project_timestamp)
 
     kvpairs, varsdict = options.vars.split('&'), ddict.dotdict()
     for pair in kvpairs:
@@ -136,6 +138,7 @@ def main(parser):
         j2env = Environment(loader=FileSystemLoader(templateProjectDir))
         ,template_name = "%" + options.template + "%"
         ,project_name  = options.project
+        ,timestamp = project_timestamp
         ,template_root = templateProjectDir
         ,generate_root = generateProjectDir
         ,vars = varsdict
@@ -149,7 +152,12 @@ def main(parser):
             ],
             copy_project_cb, projectCfg)
 
-    elog.force("project generated successfully at: %s", generateProjectDir)
+    genPackageFile = os.path.join(pytools_root, os.path.basename(generateProjectDir) + ".tar.gz")
+
+    util.compress_targz(genPackageFile, generateProjectDir)
+
+    elog.force("generated project at: %s", generateProjectDir)
+    elog.force("project package file: %s", genPackageFile)
     pass
 
 
