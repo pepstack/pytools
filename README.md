@@ -92,3 +92,29 @@ NOTE: default config yaml file for sample.py (sample.yaml) lies at:
 	$ ./revise.py -F cpp -N 0.1.1 -P /path/to/mydir
 
 注：不包括上面的头信息的文件不会做任何改变。
+
+## gen_project.py
+
+安装项目模板(在 templates 目录下) 自动生成项目。默认提供的模板(%clib%)是一个 C 语言的静态库+动态库+测试程序。
+
+安装这个模板(%clib%)生成一个你自己的项目，按照下面的命令：
+
+  gen_project.py --project=pureclib --force
+
+生成的项目 pureclib 默认在 gen-projects 目录下。
+
+支持下面几种方式编译: pureclib
+
+	1) 使用 vs2015+ 打开 gen-projects/pureclib/msvc/pureclib-ALL-vs2015.sln，生成全部。
+
+	2) 使用 cygwin, mingw, linux shell 编译
+	
+		cd gen-projects/pureclib
+
+		make clean && make dist
+
+TODO:
+
+    Android
+
+	Mac/ios
