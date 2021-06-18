@@ -8,10 +8,28 @@
       <UniqueIdentifier>{{project.Guids[31]}}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{{project.Guids[32]}}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common\win32">
+      <UniqueIdentifier>{{project.Guids[33]}}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\apps\test_{{project.name}}\main.c">
+    <ClCompile Include="..\..\src\apps\test_{{project.name}}\app_incl.h">
       <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\apps\test_{{project.name}}\app_main.c">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\win32\getopt_longw.c">
+      <Filter>common\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\win32\getoptw.c">
+      <Filter>common\win32</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\win32\syslog-client.c">
+      <Filter>common\win32</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

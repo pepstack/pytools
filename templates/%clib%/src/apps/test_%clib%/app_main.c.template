@@ -1,0 +1,41 @@
+/**
+ * app_main.c
+ *   A test app using lib{{project.name}}.
+ */
+#include "app_incl.h"
+
+static const char THIS_FILE[] = "app_main.c";
+
+
+clog_logger app_logger = NULL;
+
+static void appexit_cleanup(void)
+{
+    logger_manager_uninit();
+    app_opts_uninit();
+}
+
+
+int main(int argc, char *argv[])
+{
+    WINDOWS_CRTDBG_ON
+
+    parse_arguments(argc, argv);
+
+    logger_manager_init(NULL, cstrbufGetStr(app_opts.ident), 0);
+    atexit(appexit_cleanup);
+
+    app_logger = logger_manager_load(NULL);
+    
+    const char *libname;
+    const char *libversion = {{project.name}}_lib_version(&libname);
+
+    LOGGER_INFO(app_logger, "starting. lib: %s-%s", libname, libversion);
+
+    // TODO:
+
+    LOGGER_INFO(app_logger, "app end.");
+
+    system("pause");
+    return 0;
+}
