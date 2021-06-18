@@ -1,0 +1,200 @@
+###########################################################
+# Makefile
+#   Build lib{{project.name}}
+#
+# Author: 350137278@qq.com
+#
+# Update: 2021-06-14
+#
+# Show all predefinitions of gcc:
+#
+#   https://blog.csdn.net/10km/article/details/49023471
+#
+#   $ gcc -posix -E -dM - < /dev/null
+#
+###########################################################
+# Linux, CYGWIN_NT, MSYS_NT, ...
+shuname="$(shell uname)"
+OSARCH=$(shell echo $(shuname)|awk -F '-' '{ print $$1 }')
+
+# debug | release (default)
+RELEASE = 1
+BUILDCFG = release
+
+# 32 | 64 (default)
+BITS = 64
+
+
+CC = gcc
+
+# for gcc-8+
+# -Wno-unused-const-variable
+CFLAGS += -std=gnu99 -D_GNU_SOURCE -fPIC -Wall -Wno-unused-function -Wno-unused-variable
+
+LDFLAGS += -lpthread -lm
+
+
+#######################################
+ifeq ($(RELEASE), 0)
+	# debug: make RELEASE=0
+	CFLAGS += -D_DEBUG -g
+	BUILDCFG = debug
+else
+	# release: make RELEASE=1
+	CFLAGS += -DNDEBUG -O3
+	BUILDCFG = release
+endif
+
+ifeq ($(BITS), 32)
+	# 32bits: make BITS=32
+	CFLAGS += -m32
+	LDFLAGS += -m32
+else
+	ifeq ($(BITS), 64)
+		# 64bits: make BITS=64
+		CFLAGS += -m64
+		LDFLAGS += -m64
+	endif
+endif
+
+
+ifeq ($(OSARCH), MSYS_NT)
+	ifeq ($(BITS), 64)
+		CFLAGS += -D__MINGW64__
+	else
+		CFLAGS += -D__MINGW32__
+	endif
+else ifeq ($(OSARCH), MINGW64_NT)
+	ifeq ($(BITS), 64)
+		CFLAGS += -D__MINGW64__
+	else
+		CFLAGS += -D__MINGW32__
+	endif
+else ifeq ($(OSARCH), MINGW32_NT)
+	ifeq ($(BITS), 64)
+		CFLAGS += -D__MINGW64__
+	else
+		CFLAGS += -D__MINGW32__
+	endif
+endif
+
+
+ifeq ($(OSARCH), CYGWIN_NT)
+	ifeq ($(BITS), 64)
+		CFLAGS += -D__CYGWIN64__ -D__CYGWIN__
+	else
+		CFLAGS += -D__CYGWIN32__ -D__CYGWIN__
+	endif
+endif
+
+
+#######################################
+PREFIX = .
+
+SRC_DIR = $(PREFIX)/src
+COMMON_DIR = $(PREFIX)/src/common
+
+INCLUDE_DIRS += -I$(PREFIX) \
+	-I$(SRC_DIR) \
+	-I$(COMMON_DIR)
+
+	
+{{project.NAME}}_DIR = $(PREFIX)/src/{{project.name}}
+
+{{project.NAME}}_VERSION_FILE = $({{project.NAME}}_DIR)/VERSION
+{{project.NAME}}_VERSION = $(shell cat $({{project.NAME}}_VERSION_FILE))
+
+{{project.NAME}}_STATIC_LIB = lib{{project.name}}.a
+{{project.NAME}}_DYNAMIC_LIB = lib{{project.name}}.so.$({{project.NAME}}_VERSION)
+
+{{project.NAME}}_DIST_ROOT = $(PREFIX)/lib{{project.name}}-$({{project.NAME}}_VERSION)
+{{project.NAME}}_DIST_LIBDIR=$({{project.NAME}}_DIST_ROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
+
+DIST_APPS_ROOT = $(PREFIX)/dist-apps
+
+
+# C objects
+{{project.NAME}}_OBJS = {{project.name}}.o
+
+
+
+all: $({{project.NAME}}_DYNAMIC_LIB) $({{project.NAME}}_STATIC_LIB).$(OSARCH) 
+
+
+help:
+	@echo
+	@echo Build lib{{project.name}}-$(shell cat $({{project.NAME}}_VERSION_FILE)) for:
+	@echo
+	@echo "1) 64 bits release (default)"
+	@echo "    $$ make"
+	@echo
+	@echo "2) 32 bits debug"
+	@echo "    $$ make RELEASE=0 BITS=32"
+	@echo
+	@echo Dist target into default path: $({{project.NAME}}_DIST_ROOT)"
+	@echo "    $$ make dist"
+	@echo
+	@echo Dist target into given path:
+	@echo "    $$ make {{project.NAME}}_DIST_ROOT=/path/to/YourInstallDir dist"
+	@echo
+	@echo "Show make options:"
+	@echo "    $$ make help"
+
+
+$({{project.NAME}}_STATIC_LIB).$(OSARCH): $({{project.NAME}}_OBJS)
+	rm -f $@
+	rm -f $({{project.NAME}}_STATIC_LIB)
+	ar cr $@ $({{project.NAME}}_OBJS)
+	rm -f $({{project.NAME}}_OBJS)
+	ln -s $@ $({{project.NAME}}_STATIC_LIB)
+
+
+$({{project.NAME}}_DYNAMIC_LIB): $({{project.NAME}}_OBJS)
+	$(CC) $(CFLAGS) -shared \
+		-Wl,--soname=$({{project.NAME}}_DYNAMIC_LIB) \
+		-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
+		-o $@ \
+		$({{project.NAME}}_OBJS) \
+		$(LDFLAGS)
+
+
+{{project.name}}.o: $({{project.NAME}}_DIR)/{{project.name}}.c
+	$(CC) $(CFLAGS) -c $({{project.NAME}}_DIR)/{{project.name}}.c $(INCLUDE_DIRS) -I$({{project.NAME}}_DIR) -o $@
+
+
+dist: all
+	@mkdir -p $({{project.NAME}}_DIST_ROOT)/include/{{project.name}}
+	@mkdir -p $({{project.NAME}}_DIST_ROOT)/include/common
+	@mkdir -p $({{project.NAME}}_DIST_LIBDIR)
+	@cp $(COMMON_DIR)/unitypes.h $({{project.NAME}}_DIST_ROOT)/include/common/
+	@cp $({{project.NAME}}_DIR)/{{project.name}}_api.h $({{project.NAME}}_DIST_ROOT)/include/{{project.name}}/
+	@cp $({{project.NAME}}_DIR)/{{project.name}}_def.h $({{project.NAME}}_DIST_ROOT)/include/{{project.name}}/
+	@cp $(PREFIX)/$({{project.NAME}}_STATIC_LIB).$(OSARCH) $({{project.NAME}}_DIST_LIBDIR)/$({{project.NAME}}_STATIC_LIB)
+	@cp $(PREFIX)/$({{project.NAME}}_DYNAMIC_LIB) $({{project.NAME}}_DIST_LIBDIR)/$({{project.NAME}}_DYNAMIC_LIB)
+
+
+clean:
+	-rm -f $(PREFIX)/*.stackdump
+	-rm -f $(PREFIX)/*.o
+	-rm -f $(PREFIX)/$({{project.NAME}}_STATIC_LIB)
+	-rm -f $(PREFIX)/$({{project.NAME}}_STATIC_LIB).*
+	-rm -f $(PREFIX)/$({{project.NAME}}_DYNAMIC_LIB)
+	-rm -f $(PREFIX)/msvc/*.VC.db
+	-rm -rf $(PREFIX)/msvc/lib{{project.name}}/build
+	-rm -rf $(PREFIX)/msvc/lib{{project.name}}/target
+	-rm -rf $(PREFIX)/msvc/lib{{project.name}}_dll/build
+	-rm -rf $(PREFIX)/msvc/lib{{project.name}}_dll/target
+	-rm -rf $(PREFIX)/msvc/test_{{project.name}}/build
+	-rm -rf $(PREFIX)/msvc/test_{{project.name}}/target
+	-rm -rf $(PREFIX)/msvc/test_{{project.name}}dll/build
+	-rm -rf $(PREFIX)/msvc/test_{{project.name}}dll/target
+	-rm -rf $(PREFIX)/dist-apps/Debug
+	-rm -rf $({{project.NAME}}_DIST_LIBDIR)
+
+
+cleanall: clean
+	-rm -rf $(DIST_APPS_ROOT)
+	-rm -rf $({{project.NAME}}_DIST_ROOT)
+
+
+.PHONY: clean cleanall dist

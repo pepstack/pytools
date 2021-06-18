@@ -1,0 +1,13 @@
+/**
+ * {{project.name}}.c
+ */
+#include "{{project.name}}_i.h"
+
+
+const char * {{project.name}}_lib_version(const char **_libname)
+{
+    if (_libname) {
+        *_libname = LIBNAME;
+    }
+    return LIBVERSION;
+}

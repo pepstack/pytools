@@ -1,0 +1,21 @@
+/**
+ * {{project.name}}_api.h
+ */
+#ifndef {{project.NAME}}_API_H_PUBLIC
+#define {{project.NAME}}_API_H_PUBLIC
+
+#ifdef    __cplusplus
+extern "C" {
+#endif
+
+#include "{{project.name}}_def.h"
+
+
+{{project.NAME}}_API const char * {{project.name}}_lib_version(const char **_libname);
+
+
+#ifdef    __cplusplus
+}
+#endif
+
+#endif /* {{project.NAME}}_API_H_PUBLIC */

@@ -1,0 +1,20 @@
+# {{project.name}}
+
+{{project.name}} C api.
+
+Author: {{project.vars.author}}
+
+Date: {{project.date}}
+
+
+## Build for Windows
+
+  open msvc/{{project.name}}-all.sln with vs2015 and build.
+
+
+## Build for Linux, mingw, cygwin
+
+  type "make help" on Shell for details.
+
+
+## TODO

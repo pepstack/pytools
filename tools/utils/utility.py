@@ -6,7 +6,7 @@
 #
 # @create: 2015-12-02
 #
-# @update: 2021-04-28
+# @update: 2021-06-18
 #
 #######################################################################
 from __future__ import print_function
@@ -937,63 +937,34 @@ def create_outfile(outfile, write_callback, userarg = None, **kvargs):
 
 
 # 复制目录树, 并根据设置替换目标文件夹. 参考下面的例子:
-#   srcdir => dstdir
 #
-#   test/ => test2/
-#   jdk/ => java/
+#   copydirtree("/root/mydata", "/root/mydata2", [("%clib%", "clib")])
 #
-#   copydirtree("/root/mydata", "/root/mydata2",
-#     ({
-#         "testDir": "/root/mydata/test"",
-#         "javaDir": "/root/mydata/jdk",
-#      },
-#      {
-#         "testDir": "/root/mydata2/test2",
-#         "javaDir": "/root/mydata2/java",
-#      }),
-#      True)
-#
-def copyfilecallback (src, dst, cbarg, verbose):
-    if verbose:
-        info("copyfile: %s -> %s" % (src, dst))
+def copyfile_cb_default (src, dst, cbarg):
+    info("copyfile: %s -> %s" % (src, dst))
     shutil.copyfile(src, dst)
     pass
 
 
-def copydirtree(srcdir, dstdir, pairCfg = None, verbose = True, copyfile_cb = copyfilecallback, cbarg = None):
-    (srcPathsCfg, dstPathsCfg) = None, None
-    if pairCfg:
-        (srcPathsCfg, dstPathsCfg) = pairCfg
+def copydirtree(srcdir, dstdir, replaces = [], copyfile_cb = copyfile_cb_default, copyfile_cbarg = None):
+    for (oldname, newname) in replaces:
+        dstdir = dstdir.replace(oldname, newname)
 
     if not dir_exists(dstdir):
-        dname = os.path.basename(dstdir)
-        if dname.startswith('%') and dname.endswith('%'):
-            if verbose:
-                info("ignore tmp dir: %s" % dstdir)
-        else:
-            if verbose:
-                info("create new dir: %s" % dstdir)
-            os.makedirs(dstdir)
-
-    if verbose:
-        info2("copydirtree: %s/ => %s/" % (srcdir, dstdir))
+        os.makedirs(dstdir)
 
     for f in os.listdir(srcdir):
-        pf = os.path.join(srcdir, f)
-        df = os.path.join(dstdir, f)
+        srcfile = os.path.join(srcdir, f)
 
-        if srcPathsCfg and dstPathsCfg:
-            for k, v in srcPathsCfg.items():
-                if pf == v:
-                    df = dstPathsCfg.get(k, df)
-                    break
+        for (oldname, newname) in replaces:
+            f = f.replace(oldname, newname)
 
-        if os.path.isfile(pf):
-            if verbose:
-                info("copyfile: %s -> %s" % (pf, df))
-            copyfile_cb(pf, df, cbarg, verbose)
+        dstfile = os.path.join(dstdir, f)
+
+        if os.path.isfile(srcfile):
+            copyfile_cb(srcfile, dstfile, copyfile_cbarg)
         else:
-            copydirtree(pf, df, pairCfg, verbose, copyfile_cb, cbarg)
+            copydirtree(srcfile, dstfile, replaces, copyfile_cb, copyfile_cbarg)
     pass
 
 

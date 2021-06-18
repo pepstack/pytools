@@ -1,0 +1,41 @@
+/**
+ * {{project.name}}_def.h
+ */
+#ifndef {{project.NAME}}_DEF_H_INCLUDED
+#define {{project.NAME}}_DEF_H_INCLUDED
+
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+#include <common/unitypes.h>
+
+#if defined({{project.NAME}}_DLL)
+/* win32 dynamic dll */
+# ifdef {{project.NAME}}_EXPORTS
+#   define {{project.NAME}}_API __declspec(dllexport)
+# else
+#   define {{project.NAME}}_API __declspec(dllimport)
+# endif
+#else
+/* static lib or linux so */
+# define {{project.NAME}}_API  extern
+#endif
+
+typedef int {{project.NAME}}_BOOL;
+
+#define {{project.NAME}}_TRUE    1
+#define {{project.NAME}}_FALSE   0
+
+
+typedef int {{project.NAME}}_RESULT;
+
+#define {{project.NAME}}_SUCCESS     0
+#define {{project.NAME}}_ERROR     (-1)
+
+
+#if defined(__cplusplus)
+}
+#endif
+
+#endif /* {{project.NAME}}_DEF_H_INCLUDED */
