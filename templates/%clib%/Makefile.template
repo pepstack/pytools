@@ -1,4 +1,4 @@
-###########################################################
+#######################################################################
 # Makefile
 #   Build lib{{project.name}}
 #
@@ -12,7 +12,7 @@
 #
 #   $ gcc -posix -E -dM - < /dev/null
 #
-###########################################################
+#######################################################################
 # Linux, CYGWIN_NT, MSYS_NT, ...
 shuname="$(shell uname)"
 OSARCH=$(shell echo $(shuname)|awk -F '-' '{ print $$1 }')
@@ -24,17 +24,23 @@ BUILDCFG = release
 # 32 | 64 (default)
 BITS = 64
 
+###########################################################
+# Compiler Specific Configuration
 
 CC = gcc
 
 # for gcc-8+
 # -Wno-unused-const-variable
 CFLAGS += -std=gnu99 -D_GNU_SOURCE -fPIC -Wall -Wno-unused-function -Wno-unused-variable
+#......
 
 LDFLAGS += -lpthread -lm
+#......
 
 
-#######################################
+###########################################################
+# Architecture Configuration
+
 ifeq ($(RELEASE), 0)
 	# debug: make RELEASE=0
 	CFLAGS += -D_DEBUG -g
@@ -88,18 +94,11 @@ ifeq ($(OSARCH), CYGWIN_NT)
 endif
 
 
-#######################################
+###########################################################
+# Project Specific Configuration
 PREFIX = .
 
-SRC_DIR = $(PREFIX)/src
-COMMON_DIR = $(PREFIX)/src/common
-
-INCLUDE_DIRS += -I$(PREFIX) \
-	-I$(SRC_DIR) \
-	-I$(COMMON_DIR)
-
-	
-{{project.NAME}}_DIR = $(PREFIX)/src/{{project.name}}
+DIST_APPS_ROOT = $(PREFIX)/dist-apps
 
 {{project.NAME}}_VERSION_FILE = $({{project.NAME}}_DIR)/VERSION
 {{project.NAME}}_VERSION = $(shell cat $({{project.NAME}}_VERSION_FILE))
@@ -110,15 +109,48 @@ INCLUDE_DIRS += -I$(PREFIX) \
 {{project.NAME}}_DIST_ROOT = $(PREFIX)/lib{{project.name}}-$({{project.NAME}}_VERSION)
 {{project.NAME}}_DIST_LIBDIR=$({{project.NAME}}_DIST_ROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
 
-DIST_APPS_ROOT = $(PREFIX)/dist-apps
+
+# Given dirs for all source (*.c) files
+SRC_DIR = $(PREFIX)/src
+COMMON_DIR = $(SRC_DIR)/common
+{{project.NAME}}_DIR = $(SRC_DIR)/{{project.name}}
+#......
+
+# Set all dirs for C source: './src/a ./src/b'
+ALLCDIRS += $(SRCDIR) $(SRCDIR) $({{project.NAME}}_DIR)
+
+# Get pathfiles for C source files: './src/a/1.c ./src/b/2.c'
+CSRCS := $(foreach cdir, $(ALLCDIRS), $(wildcard $(cdir)/*.c))
+
+# Get names of object files: '1.o 2.o'
+COBJS = $(patsubst %.c, %.o, $(notdir $(CSRCS)))
 
 
-# C objects
-{{project.NAME}}_OBJS = {{project.name}}.o
+# Given dirs for all header (*.h) files
+INCDIRS += -I$(PREFIX) \
+	-I$(SRC_DIR) \
+	-I$(COMMON_DIR) \
+	-I$({{project.NAME}}_DIR)
+#......
 
 
+###########################################################
+# Build Target Configuration
+.PHONY: all clean cleanall dist
 
-all: $({{project.NAME}}_DYNAMIC_LIB) $({{project.NAME}}_STATIC_LIB).$(OSARCH) 
+all: $({{project.NAME}}_DYNAMIC_LIB) $({{project.NAME}}_STATIC_LIB).$(OSARCH)
+
+
+#----------------------------------------------------------
+# http://www.gnu.org/software/make/manual/make.html#Eval-Function
+
+define COBJS_template =
+$(basename $(notdir $(1))).o: $(1)
+	$(CC) $(CFLAGS) -c $(1) $(INCDIRS) -o $(basename $(notdir $(1))).o
+endef
+
+$(foreach src,$(CSRCS),$(eval $(call COBJS_template,$(src))))
+#----------------------------------------------------------
 
 
 help:
@@ -141,25 +173,20 @@ help:
 	@echo "    $$ make help"
 
 
-$({{project.NAME}}_STATIC_LIB).$(OSARCH): $({{project.NAME}}_OBJS)
+$({{project.NAME}}_STATIC_LIB).$(OSARCH): $(COBJS)
 	rm -f $@
 	rm -f $({{project.NAME}}_STATIC_LIB)
-	ar cr $@ $({{project.NAME}}_OBJS)
-	rm -f $({{project.NAME}}_OBJS)
+	ar cr $@ $^
 	ln -s $@ $({{project.NAME}}_STATIC_LIB)
 
 
-$({{project.NAME}}_DYNAMIC_LIB): $({{project.NAME}}_OBJS)
+$({{project.NAME}}_DYNAMIC_LIB): $(COBJS)
 	$(CC) $(CFLAGS) -shared \
 		-Wl,--soname=$({{project.NAME}}_DYNAMIC_LIB) \
 		-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
 		-o $@ \
-		$({{project.NAME}}_OBJS) \
+		$^ \
 		$(LDFLAGS)
-
-
-{{project.name}}.o: $({{project.NAME}}_DIR)/{{project.name}}.c
-	$(CC) $(CFLAGS) -c $({{project.NAME}}_DIR)/{{project.name}}.c $(INCLUDE_DIRS) -I$({{project.NAME}}_DIR) -o $@
 
 
 dist: all
@@ -175,7 +202,7 @@ dist: all
 
 clean:
 	-rm -f $(PREFIX)/*.stackdump
-	-rm -f $(PREFIX)/*.o
+	-rm -f $(COBJS)
 	-rm -f $(PREFIX)/$({{project.NAME}}_STATIC_LIB)
 	-rm -f $(PREFIX)/$({{project.NAME}}_STATIC_LIB).*
 	-rm -f $(PREFIX)/$({{project.NAME}}_DYNAMIC_LIB)
@@ -195,6 +222,3 @@ clean:
 cleanall: clean
 	-rm -rf $(DIST_APPS_ROOT)
 	-rm -rf $({{project.NAME}}_DIST_ROOT)
-
-
-.PHONY: clean cleanall dist
