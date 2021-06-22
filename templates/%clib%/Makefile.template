@@ -4,7 +4,7 @@
 #
 # Author: 350137278@qq.com
 #
-# Update: 2021-06-14
+# Update: 2021-06-22
 #
 # Show all predefinitions of gcc:
 #
@@ -23,6 +23,9 @@ BUILDCFG = release
 
 # 32 | 64 (default)
 BITS = 64
+
+# Is MINGW(1) or not(0)
+MINGW_FLAG = 0
 
 ###########################################################
 # Compiler Specific Configuration
@@ -65,18 +68,21 @@ endif
 
 
 ifeq ($(OSARCH), MSYS_NT)
+	MINGW_FLAG = 1
 	ifeq ($(BITS), 64)
 		CFLAGS += -D__MINGW64__
 	else
 		CFLAGS += -D__MINGW32__
 	endif
 else ifeq ($(OSARCH), MINGW64_NT)
+	MINGW_FLAG = 1
 	ifeq ($(BITS), 64)
 		CFLAGS += -D__MINGW64__
 	else
 		CFLAGS += -D__MINGW32__
 	endif
 else ifeq ($(OSARCH), MINGW32_NT)
+	MINGW_FLAG = 1
 	ifeq ($(BITS), 64)
 		CFLAGS += -D__MINGW64__
 	else
@@ -98,6 +104,13 @@ endif
 # Project Specific Configuration
 PREFIX = .
 
+# Given dirs for all source (*.c) files
+SRC_DIR = $(PREFIX)/src
+COMMON_DIR = $(SRC_DIR)/common
+APPS_DIR = $(SRC_DIR)/apps
+
+{{project.NAME}}_DIR = $(SRC_DIR)/{{project.name}}
+
 DIST_APPS_ROOT = $(PREFIX)/dist-apps
 
 {{project.NAME}}_VERSION_FILE = $({{project.NAME}}_DIR)/VERSION
@@ -109,15 +122,11 @@ DIST_APPS_ROOT = $(PREFIX)/dist-apps
 {{project.NAME}}_DIST_ROOT = $(PREFIX)/lib{{project.name}}-$({{project.NAME}}_VERSION)
 {{project.NAME}}_DIST_LIBDIR=$({{project.NAME}}_DIST_ROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
 
-
-# Given dirs for all source (*.c) files
-SRC_DIR = $(PREFIX)/src
-COMMON_DIR = $(SRC_DIR)/common
-{{project.NAME}}_DIR = $(SRC_DIR)/{{project.name}}
 #......
 
+
 # Set all dirs for C source: './src/a ./src/b'
-ALLCDIRS += $(SRCDIR) $(SRCDIR) $({{project.NAME}}_DIR)
+ALLCDIRS += $(SRCDIR) $(COMMON_DIR) $({{project.NAME}}_DIR)
 
 # Get pathfiles for C source files: './src/a/1.c ./src/b/2.c'
 CSRCS := $(foreach cdir, $(ALLCDIRS), $(wildcard $(cdir)/*.c))
@@ -134,11 +143,23 @@ INCDIRS += -I$(PREFIX) \
 #......
 
 
+ifeq ($(MINGW_FLAG), 1)
+	MINGW_CSRCS = $(COMMON_DIR)/win32/syslog-client.c
+	MINGW_LINKS = -lws2_32
+else
+	MINGW_CSRCS =
+	MINGW_LINKS =
+endif
+
+MINGW_COBJS = $(patsubst %.c, %.o, $(notdir $(MINGW_CSRCS)))
+
 ###########################################################
 # Build Target Configuration
-.PHONY: all clean cleanall dist
+.PHONY: all apps clean cleanall dist
 
-all: $({{project.NAME}}_DYNAMIC_LIB) $({{project.NAME}}_STATIC_LIB).$(OSARCH)
+
+all: $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH) $({{project.NAME}}_STATIC_LIB).$(OSARCH)
+
 
 
 #----------------------------------------------------------
@@ -148,9 +169,12 @@ define COBJS_template =
 $(basename $(notdir $(1))).o: $(1)
 	$(CC) $(CFLAGS) -c $(1) $(INCDIRS) -o $(basename $(notdir $(1))).o
 endef
+#----------------------------------------------------------
+
 
 $(foreach src,$(CSRCS),$(eval $(call COBJS_template,$(src))))
-#----------------------------------------------------------
+
+$(foreach src,$(MINGW_CSRCS),$(eval $(call COBJS_template,$(src))))
 
 
 help:
@@ -173,21 +197,45 @@ help:
 	@echo "    $$ make help"
 
 
-$({{project.NAME}}_STATIC_LIB).$(OSARCH): $(COBJS)
+$({{project.NAME}}_STATIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	rm -f $@
 	rm -f $({{project.NAME}}_STATIC_LIB)
 	ar cr $@ $^
 	ln -s $@ $({{project.NAME}}_STATIC_LIB)
 
 
-$({{project.NAME}}_DYNAMIC_LIB): $(COBJS)
+$({{project.NAME}}_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	$(CC) $(CFLAGS) -shared \
 		-Wl,--soname=$({{project.NAME}}_DYNAMIC_LIB) \
 		-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
 		-o $@ \
 		$^ \
-		$(LDFLAGS)
+		$(LDFLAGS) \
+		$(MINGW_LINKS)
 
+
+apps: test_{{project.name}}.exe.$(OSARCH) test_lib{{project.name}}.exe.$(OSARCH)
+
+
+# -lrt for Linux
+
+test_{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.c $({{project.NAME}}_STATIC_LIB).$(OSARCH)
+	@echo Building test_{{project.name}}.exe.$(OSARCH)
+	$(CC) $(CFLAGS) $< $(INCDIRS) -o $@ \
+	$({{project.NAME}}_STATIC_LIB) \
+	$(LDFLAGS) \
+	$(MINGW_LINKS) \
+	-lrt
+
+
+test_lib{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.c $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH)
+	@echo Building test_lib{{project.name}}.exe.$(OSARCH)
+	$(CC) $(CFLAGS) $< $(INCDIRS) -o $@ \
+	$({{project.NAME}}_STATIC_LIB) \
+	$(LDFLAGS) \
+	$(MINGW_LINKS) \
+	-lrt
+	
 
 dist: all
 	@mkdir -p $({{project.NAME}}_DIST_ROOT)/include/{{project.name}}
@@ -196,16 +244,19 @@ dist: all
 	@cp $(COMMON_DIR)/unitypes.h $({{project.NAME}}_DIST_ROOT)/include/common/
 	@cp $({{project.NAME}}_DIR)/{{project.name}}_api.h $({{project.NAME}}_DIST_ROOT)/include/{{project.name}}/
 	@cp $({{project.NAME}}_DIR)/{{project.name}}_def.h $({{project.NAME}}_DIST_ROOT)/include/{{project.name}}/
-	@cp $(PREFIX)/$({{project.NAME}}_STATIC_LIB).$(OSARCH) $({{project.NAME}}_DIST_LIBDIR)/$({{project.NAME}}_STATIC_LIB)
-	@cp $(PREFIX)/$({{project.NAME}}_DYNAMIC_LIB) $({{project.NAME}}_DIST_LIBDIR)/$({{project.NAME}}_DYNAMIC_LIB)
+	@cp $(PREFIX)/$({{project.NAME}}_STATIC_LIB).$(OSARCH) $({{project.NAME}}_DIST_LIBDIR)/
+	@cp $(PREFIX)/$({{project.NAME}}_DYNAMIC_LIB).$(OSARCH) $({{project.NAME}}_DIST_LIBDIR)/
+	@cd $({{project.NAME}}_DIST_LIBDIR)/ && ln -sf $(PREFIX)/$({{project.NAME}}_STATIC_LIB).$(OSARCH) $({{project.NAME}}_STATIC_LIB)
+	@cd $({{project.NAME}}_DIST_LIBDIR)/ && ln -sf $(PREFIX)/$({{project.NAME}}_DYNAMIC_LIB).$(OSARCH) $({{project.NAME}}_DYNAMIC_LIB)
+	@cd $({{project.NAME}}_DIST_LIBDIR)/ && ln -sf $({{project.NAME}}_DYNAMIC_LIB) lib{{project.name}}.so
 
 
 clean:
 	-rm -f $(PREFIX)/*.stackdump
-	-rm -f $(COBJS)
+	-rm -f $(COBJS) $(MINGW_COBJS)
 	-rm -f $(PREFIX)/$({{project.NAME}}_STATIC_LIB)
 	-rm -f $(PREFIX)/$({{project.NAME}}_STATIC_LIB).*
-	-rm -f $(PREFIX)/$({{project.NAME}}_DYNAMIC_LIB)
+	-rm -f $(PREFIX)/$({{project.NAME}}_DYNAMIC_LIB).*
 	-rm -f $(PREFIX)/msvc/*.VC.db
 	-rm -rf $(PREFIX)/msvc/lib{{project.name}}/build
 	-rm -rf $(PREFIX)/msvc/lib{{project.name}}/target
