@@ -105,6 +105,9 @@ endif
 PREFIX = .
 DISTROOT = $(PREFIX)/dist
 
+LIBCLOGGER_DIR = $(PREFIX)/deps/libclogger
+
+
 # Given dirs for all source (*.c) files
 SRC_DIR = $(PREFIX)/src
 COMMON_DIR = $(SRC_DIR)/common
@@ -140,7 +143,8 @@ COBJS = $(patsubst %.c, %.o, $(notdir $(CSRCS)))
 INCDIRS += -I$(PREFIX) \
 	-I$(SRC_DIR) \
 	-I$(COMMON_DIR) \
-	-I$({{project.NAME}}_DIR)
+	-I$({{project.NAME}}_DIR) \
+	-I$(LIBCLOGGER_DIR)/include
 #......
 
 
@@ -213,30 +217,34 @@ $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 		$^ \
 		$(LDFLAGS) \
 		$(MINGW_LINKS)
+	ln -s $@ $({{project.NAME}}_DYNAMIC_LIB)
 
 
-apps: test_{{project.name}}.exe.$(OSARCH) test_lib{{project.name}}.exe.$(OSARCH)
+apps: dist test_{{project.name}}.exe.$(OSARCH) test_{{project.name}}dll.exe.$(OSARCH)
 
 
 # -lrt for Linux
 
-test_{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.c $({{project.NAME}}_STATIC_LIB).$(OSARCH)
+test_{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.c
 	@echo Building test_{{project.name}}.exe.$(OSARCH)
-	$(CC) $(CFLAGS) $< $(INCDIRS) -o $@ \
+	$(CC) $(CFLAGS) $< $(INCDIRS) \
+	-o $@ \
 	$({{project.NAME}}_STATIC_LIB) \
 	$(LDFLAGS) \
 	$(MINGW_LINKS) \
 	-lrt
 
 
-test_lib{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.c $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH)
-	@echo Building test_lib{{project.name}}.exe.$(OSARCH)
-	$(CC) $(CFLAGS) $< $(INCDIRS) -o $@ \
-	$({{project.NAME}}_STATIC_LIB) \
+test_{{project.name}}dll.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.c
+	@echo Building test_{{project.name}}dll.exe.$(OSARCH)
+	$(CC) $(CFLAGS) $< $(INCDIRS) \
+	-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
+	-o $@ \
+	$({{project.NAME}}_DYNAMIC_LIB) \
 	$(LDFLAGS) \
 	$(MINGW_LINKS) \
 	-lrt
-	
+
 
 dist: all
 	@mkdir -p $({{project.NAME}}_DISTROOT)/include/{{project.name}}
@@ -253,24 +261,24 @@ dist: all
 
 
 clean:
-	-rm -f $(PREFIX)/*.stackdump
+	-rm -f *.stackdump
 	-rm -f $(COBJS) $(MINGW_COBJS)
-	-rm -f $(PREFIX)/$({{project.NAME}}_STATIC_LIB)
-	-rm -f $(PREFIX)/$({{project.NAME}}_STATIC_LIB).*
-	-rm -f $(PREFIX)/$({{project.NAME}}_DYNAMIC_LIB).*
-	-rm -f $(PREFIX)/msvc/*.VC.db
-	-rm -rf $(PREFIX)/msvc/lib{{project.name}}/build
-	-rm -rf $(PREFIX)/msvc/lib{{project.name}}/target
-	-rm -rf $(PREFIX)/msvc/lib{{project.name}}_dll/build
-	-rm -rf $(PREFIX)/msvc/lib{{project.name}}_dll/target
-	-rm -rf $(PREFIX)/msvc/test_{{project.name}}/build
-	-rm -rf $(PREFIX)/msvc/test_{{project.name}}/target
-	-rm -rf $(PREFIX)/msvc/test_{{project.name}}dll/build
-	-rm -rf $(PREFIX)/msvc/test_{{project.name}}dll/target
-	-rm -rf $(PREFIX)/dist-apps/Debug
-	-rm -rf $({{project.NAME}}_DIST_LIBDIR)
-
+	-rm -f $({{project.NAME}}_STATIC_LIB)
+	-rm -f $({{project.NAME}}_DYNAMIC_LIB)
+	-rm -f $({{project.NAME}}_STATIC_LIB).$(OSARCH)
+	-rm -f $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH)
+	-rm -f ./msvc/*.VC.db
+	-rm -rf ./msvc/lib{{project.name}}/build
+	-rm -rf ./msvc/lib{{project.name}}/target
+	-rm -rf ./msvc/lib{{project.name}}_dll/build
+	-rm -rf ./msvc/lib{{project.name}}_dll/target
+	-rm -rf ./msvc/test_{{project.name}}/build
+	-rm -rf ./msvc/test_{{project.name}}/target
+	-rm -rf ./msvc/test_{{project.name}}dll/build
+	-rm -rf ./msvc/test_{{project.name}}dll/target
+	-rm -f test_{{project.name}}.exe.$(OSARCH)
+	-rm -f test_{{project.name}}dll.exe.$(OSARCH)
+	
 
 cleanall: clean
-	-rm -rf $(APPS_DISTROOT)
-	-rm -rf $({{project.NAME}}_DISTROOT)
+	-rm -rf $(DISTROOT)

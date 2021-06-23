@@ -6,12 +6,16 @@
 
 static const char THIS_FILE[] = "app_main.c";
 
+#ifdef HAS_LIBCLOGGER
+    clog_logger app_logger = NULL;
+#endif
 
-clog_logger app_logger = NULL;
 
 static void appexit_cleanup(void)
 {
+#ifdef HAS_LIBCLOGGER
     logger_manager_uninit();
+#endif
     app_opts_uninit();
 }
 
@@ -22,19 +26,29 @@ int main(int argc, char *argv[])
 
     parse_arguments(argc, argv);
 
+#ifdef HAS_LIBCLOGGER
     logger_manager_init(NULL, cstrbufGetStr(app_opts.ident), 0);
+#endif
+
     atexit(appexit_cleanup);
 
+#ifdef HAS_LIBCLOGGER
     app_logger = logger_manager_load(NULL);
-    
+#endif
+
     const char *libname;
     const char *libversion = {{project.name}}_lib_version(&libname);
 
+#ifdef HAS_LIBCLOGGER
     LOGGER_INFO(app_logger, "starting. lib: %s-%s", libname, libversion);
+#endif
 
     // TODO:
 
+
+#ifdef HAS_LIBCLOGGER
     LOGGER_INFO(app_logger, "app end.");
+#endif
 
     system("pause");
     return 0;

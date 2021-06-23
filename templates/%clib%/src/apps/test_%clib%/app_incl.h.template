@@ -13,7 +13,9 @@ extern "C" {
 #include <common/cstrbuf.h>
 #include <common/emerglog.h>
 
-#include <clogger/logger_api.h>
+#ifdef HAS_LIBCLOGGER
+#   include <clogger/logger_api.h>
+#endif
 
 /* using pthread or pthread-w32 */
 #include <sched.h>
@@ -42,8 +44,9 @@ extern "C" {
 static const char APP_NAME[]     = "test_{{project.name}}";
 static const char APP_VERSION[]  = "0.0.1" ;
 
-extern clog_logger app_logger;
-
+#ifdef HAS_LIBCLOGGER
+    extern clog_logger app_logger;
+#endif
 
 static void app_opts_init(void);
 static void app_opts_uninit(void);
