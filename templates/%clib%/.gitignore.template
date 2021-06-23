@@ -4,19 +4,15 @@
 lib{{project.name}}-*/
 lib{{project.name}}.*
 
-/libs
-/win32-libs
-
 # Windows and MSVC
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 
 .vs/
-
 *.VC.db
 *.VC.opendb
-
+*.sdf
 
 # Python
 *.py[cod]
@@ -30,13 +26,14 @@ Desktop.ini
 *.o
 *.log
 
+~*
+
 logs/
 temp/
 
 build/
 target/
-
-dist-apps/
+dist/
 
 # doxygen generated
 docs/api/

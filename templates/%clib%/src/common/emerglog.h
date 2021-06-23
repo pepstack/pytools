@@ -32,7 +32,7 @@
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.10
  * @create     2017-05-02 12:02:50
- * @update     2021-03-07 18:22:50
+ * @update     2021-06-22 18:29:50
  */
 #ifndef EMERG_LOG_H_INCLUDED
 #define EMERG_LOG_H_INCLUDED
@@ -127,7 +127,7 @@ void emerg_syslog_message(int exitcode, const char *ident, const char *filename,
     } while(0)
 
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 
     # define emerglog_err_exit(err, ident, message, ...) do { \
         if ((err)) { \

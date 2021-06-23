@@ -30,7 +30,7 @@
  * @author     Liang Zhang <350137278@qq.com>
  * @version    0.0.10
  * @create     2017-08-28 11:12:10
- * @update     2021-05-27 14:20:46
+ * @update     2021-06-22 17:59:46
  */
 #ifndef _CSTRBUF_H_
 #define _CSTRBUF_H_
@@ -954,6 +954,11 @@ int cstr_findstr_in (const char *str, int count, const char *dests[], int destsn
 {
     int i = 0;
 
+    /**
+     * FIX warning:‘strncasecmp’ specified bound 18446744073709551614 exceeds maximum object size 9223372036854775807
+     */
+    size_t szcnt = (count < 0 ? cstr_length(str, -1) : count);
+
     for (; i < destsnum; i++) {
         const char *dest = dests[i];
 
@@ -963,23 +968,23 @@ int cstr_findstr_in (const char *str, int count, const char *dests[], int destsn
         }
 
         if (dest && str) {
-            int len = cstr_length(dest, count + 1);
+            int len = cstr_length(dest, szcnt + 1);
 
-            if (len == count) {
+            if (len == szcnt) {
                 if (caseignore) {
     #ifdef _MSC_VER
-                    if (! strnicmp(str, dest, count)) {
+                    if (! strnicmp(str, dest, szcnt)) {
                         // found
                         return i;
                     }
     #else
-                    if (! strncasecmp(str, dest, count)) {
+                    if (! strncasecmp(str, dest, szcnt)) {
                         // found
                         return i;
                     }
     #endif
                 } else {
-                    if (! strncmp(str, dest, count)) {
+                    if (! strncmp(str, dest, szcnt)) {
                         // found
                         return i;
                     }

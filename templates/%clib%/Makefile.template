@@ -103,6 +103,7 @@ endif
 ###########################################################
 # Project Specific Configuration
 PREFIX = .
+DISTROOT = $(PREFIX)/dist
 
 # Given dirs for all source (*.c) files
 SRC_DIR = $(PREFIX)/src
@@ -111,7 +112,7 @@ APPS_DIR = $(SRC_DIR)/apps
 
 {{project.NAME}}_DIR = $(SRC_DIR)/{{project.name}}
 
-DIST_APPS_ROOT = $(PREFIX)/dist-apps
+APPS_DISTROOT = $(DISTROOT)/apps
 
 {{project.NAME}}_VERSION_FILE = $({{project.NAME}}_DIR)/VERSION
 {{project.NAME}}_VERSION = $(shell cat $({{project.NAME}}_VERSION_FILE))
@@ -119,8 +120,8 @@ DIST_APPS_ROOT = $(PREFIX)/dist-apps
 {{project.NAME}}_STATIC_LIB = lib{{project.name}}.a
 {{project.NAME}}_DYNAMIC_LIB = lib{{project.name}}.so.$({{project.NAME}}_VERSION)
 
-{{project.NAME}}_DIST_ROOT = $(PREFIX)/lib{{project.name}}-$({{project.NAME}}_VERSION)
-{{project.NAME}}_DIST_LIBDIR=$({{project.NAME}}_DIST_ROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
+{{project.NAME}}_DISTROOT = $(DISTROOT)/lib{{project.name}}-$({{project.NAME}}_VERSION)
+{{project.NAME}}_DIST_LIBDIR=$({{project.NAME}}_DISTROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
 
 #......
 
@@ -187,11 +188,11 @@ help:
 	@echo "2) 32 bits debug"
 	@echo "    $$ make RELEASE=0 BITS=32"
 	@echo
-	@echo Dist target into default path: $({{project.NAME}}_DIST_ROOT)"
+	@echo Dist target into default path: $({{project.NAME}}_DISTROOT)"
 	@echo "    $$ make dist"
 	@echo
 	@echo Dist target into given path:
-	@echo "    $$ make {{project.NAME}}_DIST_ROOT=/path/to/YourInstallDir dist"
+	@echo "    $$ make {{project.NAME}}_DISTROOT=/path/to/YourInstallDir dist"
 	@echo
 	@echo "Show make options:"
 	@echo "    $$ make help"
@@ -238,12 +239,12 @@ test_lib{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_ma
 	
 
 dist: all
-	@mkdir -p $({{project.NAME}}_DIST_ROOT)/include/{{project.name}}
-	@mkdir -p $({{project.NAME}}_DIST_ROOT)/include/common
+	@mkdir -p $({{project.NAME}}_DISTROOT)/include/{{project.name}}
+	@mkdir -p $({{project.NAME}}_DISTROOT)/include/common
 	@mkdir -p $({{project.NAME}}_DIST_LIBDIR)
-	@cp $(COMMON_DIR)/unitypes.h $({{project.NAME}}_DIST_ROOT)/include/common/
-	@cp $({{project.NAME}}_DIR)/{{project.name}}_api.h $({{project.NAME}}_DIST_ROOT)/include/{{project.name}}/
-	@cp $({{project.NAME}}_DIR)/{{project.name}}_def.h $({{project.NAME}}_DIST_ROOT)/include/{{project.name}}/
+	@cp $(COMMON_DIR)/unitypes.h $({{project.NAME}}_DISTROOT)/include/common/
+	@cp $({{project.NAME}}_DIR)/{{project.name}}_api.h $({{project.NAME}}_DISTROOT)/include/{{project.name}}/
+	@cp $({{project.NAME}}_DIR)/{{project.name}}_def.h $({{project.NAME}}_DISTROOT)/include/{{project.name}}/
 	@cp $(PREFIX)/$({{project.NAME}}_STATIC_LIB).$(OSARCH) $({{project.NAME}}_DIST_LIBDIR)/
 	@cp $(PREFIX)/$({{project.NAME}}_DYNAMIC_LIB).$(OSARCH) $({{project.NAME}}_DIST_LIBDIR)/
 	@cd $({{project.NAME}}_DIST_LIBDIR)/ && ln -sf $(PREFIX)/$({{project.NAME}}_STATIC_LIB).$(OSARCH) $({{project.NAME}}_STATIC_LIB)
@@ -271,5 +272,5 @@ clean:
 
 
 cleanall: clean
-	-rm -rf $(DIST_APPS_ROOT)
-	-rm -rf $({{project.NAME}}_DIST_ROOT)
+	-rm -rf $(APPS_DISTROOT)
+	-rm -rf $({{project.NAME}}_DISTROOT)
