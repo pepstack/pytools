@@ -104,6 +104,7 @@ endif
 # Project Specific Configuration
 PREFIX = .
 DISTROOT = $(PREFIX)/dist
+APPS_DISTROOT = $(DISTROOT)/apps
 
 LIBCLOGGER_DIR = $(PREFIX)/deps/libclogger
 
@@ -113,10 +114,11 @@ SRC_DIR = $(PREFIX)/src
 COMMON_DIR = $(SRC_DIR)/common
 APPS_DIR = $(SRC_DIR)/apps
 
+
+#----------------------------------------------------------
+# {{project.name}}
+
 {{project.NAME}}_DIR = $(SRC_DIR)/{{project.name}}
-
-APPS_DISTROOT = $(DISTROOT)/apps
-
 {{project.NAME}}_VERSION_FILE = $({{project.NAME}}_DIR)/VERSION
 {{project.NAME}}_VERSION = $(shell cat $({{project.NAME}}_VERSION_FILE))
 
@@ -125,12 +127,19 @@ APPS_DISTROOT = $(DISTROOT)/apps
 
 {{project.NAME}}_DISTROOT = $(DISTROOT)/lib{{project.name}}-$({{project.NAME}}_VERSION)
 {{project.NAME}}_DIST_LIBDIR=$({{project.NAME}}_DISTROOT)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)
+#----------------------------------------------------------
 
-#......
+
+# add other projects here:
+#...
 
 
 # Set all dirs for C source: './src/a ./src/b'
-ALLCDIRS += $(SRCDIR) $(COMMON_DIR) $({{project.NAME}}_DIR)
+ALLCDIRS += $(SRCDIR) \
+	$(COMMON_DIR) \
+	$({{project.NAME}}_DIR)
+#...
+
 
 # Get pathfiles for C source files: './src/a/1.c ./src/b/2.c'
 CSRCS := $(foreach cdir, $(ALLCDIRS), $(wildcard $(cdir)/*.c))
@@ -143,9 +152,9 @@ COBJS = $(patsubst %.c, %.o, $(notdir $(CSRCS)))
 INCDIRS += -I$(PREFIX) \
 	-I$(SRC_DIR) \
 	-I$(COMMON_DIR) \
+	-I$(LIBCLOGGER_DIR)/include \
 	-I$({{project.NAME}}_DIR) \
-	-I$(LIBCLOGGER_DIR)/include
-#......
+#...
 
 
 ifeq ($(MINGW_FLAG), 1)
@@ -165,6 +174,7 @@ MINGW_COBJS = $(patsubst %.c, %.o, $(notdir $(MINGW_CSRCS)))
 
 all: $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH) $({{project.NAME}}_STATIC_LIB).$(OSARCH)
 
+#...
 
 
 #----------------------------------------------------------
@@ -184,30 +194,33 @@ $(foreach src,$(MINGW_CSRCS),$(eval $(call COBJS_template,$(src))))
 
 help:
 	@echo
-	@echo Build lib{{project.name}}-$(shell cat $({{project.NAME}}_VERSION_FILE)) for:
+	@echo "Build all libs and apps as the following"
 	@echo
-	@echo "1) 64 bits release (default)"
-	@echo "    $$ make"
+	@echo "Build 64 bits release (default):"
+	@echo "    $$ make clean && make"
 	@echo
-	@echo "2) 32 bits debug"
-	@echo "    $$ make RELEASE=0 BITS=32"
+	@echo "Build 32 bits debug:"
+	@echo "    $$ make clean && make RELEASE=0 BITS=32"
 	@echo
-	@echo Dist target into default path: $({{project.NAME}}_DISTROOT)"
-	@echo "    $$ make dist"
+	@echo "Dist target into default path:"
+	@echo "    $$ make clean && make dist"
 	@echo
-	@echo Dist target into given path:
+	@echo "Dist target into given path:"
 	@echo "    $$ make {{project.NAME}}_DISTROOT=/path/to/YourInstallDir dist"
+	@echo
+	@echo "Build apps with all libs:"
+	@echo "    $$ make clean && make apps"
 	@echo
 	@echo "Show make options:"
 	@echo "    $$ make help"
 
 
+#----------------------------------------------------------
 $({{project.NAME}}_STATIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	rm -f $@
 	rm -f $({{project.NAME}}_STATIC_LIB)
 	ar cr $@ $^
 	ln -s $@ $({{project.NAME}}_STATIC_LIB)
-
 
 $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	$(CC) $(CFLAGS) -shared \
@@ -218,13 +231,13 @@ $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 		$(LDFLAGS) \
 		$(MINGW_LINKS)
 	ln -s $@ $({{project.NAME}}_DYNAMIC_LIB)
+#----------------------------------------------------------
 
 
 apps: dist test_{{project.name}}.exe.$(OSARCH) test_{{project.name}}dll.exe.$(OSARCH)
 
 
 # -lrt for Linux
-
 test_{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.c
 	@echo Building test_{{project.name}}.exe.$(OSARCH)
 	$(CC) $(CFLAGS) $< $(INCDIRS) \
@@ -233,6 +246,7 @@ test_{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.
 	$(LDFLAGS) \
 	$(MINGW_LINKS) \
 	-lrt
+	ln -sf $@ test_{{project.name}}
 
 
 test_{{project.name}}dll.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.c
@@ -244,11 +258,12 @@ test_{{project.name}}dll.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_ma
 	$(LDFLAGS) \
 	$(MINGW_LINKS) \
 	-lrt
+	ln -sf $@ test_{{project.name}}dll
 
 
 dist: all
-	@mkdir -p $({{project.NAME}}_DISTROOT)/include/{{project.name}}
 	@mkdir -p $({{project.NAME}}_DISTROOT)/include/common
+	@mkdir -p $({{project.NAME}}_DISTROOT)/include/{{project.name}}
 	@mkdir -p $({{project.NAME}}_DIST_LIBDIR)
 	@cp $(COMMON_DIR)/unitypes.h $({{project.NAME}}_DISTROOT)/include/common/
 	@cp $({{project.NAME}}_DIR)/{{project.name}}_api.h $({{project.NAME}}_DISTROOT)/include/{{project.name}}/
@@ -267,7 +282,6 @@ clean:
 	-rm -f $({{project.NAME}}_DYNAMIC_LIB)
 	-rm -f $({{project.NAME}}_STATIC_LIB).$(OSARCH)
 	-rm -f $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH)
-	-rm -f ./msvc/*.VC.db
 	-rm -rf ./msvc/lib{{project.name}}/build
 	-rm -rf ./msvc/lib{{project.name}}/target
 	-rm -rf ./msvc/lib{{project.name}}_dll/build
@@ -278,7 +292,8 @@ clean:
 	-rm -rf ./msvc/test_{{project.name}}dll/target
 	-rm -f test_{{project.name}}.exe.$(OSARCH)
 	-rm -f test_{{project.name}}dll.exe.$(OSARCH)
-	
+	-rm -f ./msvc/*.VC.db
+
 
 cleanall: clean
 	-rm -rf $(DISTROOT)
