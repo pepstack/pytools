@@ -13,49 +13,49 @@ Date: {{project.date}}
 
 ## How to debug using VSCode with mingw on Windows
 
-Version: 1.57.1 (user setup)
-Commit:
-Date: 2021-06-17T13:28:07.755Z
-Electron: 12.0.7
-Chrome: 89.0.4389.128
-Node.js: 14.16.0
-V8: 8.9.255.25-electron.0
-OS: Windows_NT x64 10.0.19042
+    Version: 1.57.1 (user setup)
+    Commit:
+    Date: 2021-06-17T13:28:07.755Z
+    Electron: 12.0.7
+    Chrome: 89.0.4389.128
+    Node.js: 14.16.0
+    V8: 8.9.255.25-electron.0
+    OS: Windows_NT x64 10.0.19042
 
 
-	First must create 4 environment variables as the following:
+First must create 4 environment variables as the following:
 
-	  MSYS2_PATH_TYPE=inherit
+    MSYS2_PATH_TYPE=inherit
 
-	  MSYS64_HOME=C:\\path\\to\\msys64
+    MSYS64_HOME=C:\\path\\to\\msys64
 
-	  MSYS64_ROOT_BASH=/path/to/msys64
+    MSYS64_ROOT_BASH=/path/to/msys64
 
-	  WORKSPACE_ROOT_BASH=/path/to/parent_folder_of_this_${workspaceFolder}
+    WORKSPACE_ROOT_BASH=/path/to/parent_folder_of_this_${workspaceFolder}
 
-	In my case they are:
+In my case they are:
 
-	  MSYS2_PATH_TYPE=inherit
+    MSYS2_PATH_TYPE=inherit
 
-	  MSYS64_HOME=C:\DEVPACK\msys64
+    MSYS64_HOME=C:\DEVPACK\msys64
 
-	  MSYS64_ROOT_BASH=/C/DEVPACK/msys64
+    MSYS64_ROOT_BASH=/C/DEVPACK/msys64
 
-	  WORKSPACE_ROOT_BASH=/C/Users/cheungmine/Workspace/github.com/pytools/gen-projects
+    WORKSPACE_ROOT_BASH=/C/Users/cheungmine/Workspace/github.com/pytools/gen-projects
 
-	Append to Path some environment variables in my case:
+Append to Path some environment variables in my case:
 
-	  Path=...;%MSYS64_HOME%;%MSYS64_HOME%\usr\bin;C:\DEVPACK\MicrosoftVSCode;C:\DEVPACK\MicrosoftVSCode\bin;
+    Path=...;%MSYS64_HOME%;%MSYS64_HOME%\usr\bin;C:\DEVPACK\MicrosoftVSCode;C:\DEVPACK\MicrosoftVSCode\bin;
 
-	Note: You might change them if your paths are different from those above !
+Note: You might change them if your paths are different from those above !
 
-	Then open cmd (windows shell) and type command 'code .' in the .vscode folder:
+Then open cmd (windows shell) and type command 'code .' in the .vscode folder:
 
-		C:\Users\cheungmine>cd C:\Users\cheungmine\Workspace\github.com\pytools\gen-projects\{{project.name}}
-		
-		C:\Users\cheungmine>cd C:\Users\cheungmine\Workspace\github.com\pytools\gen-projects\{{project.name}}>code .
+    C:\Users\cheungmine>cd C:\Users\cheungmine\Workspace\github.com\pytools\gen-projects\{{project.name}}
 
-	In the opened VSCode window, place break points at app_main.c and press F5 to start debugging.
+    C:\Users\cheungmine>cd C:\Users\cheungmine\Workspace\github.com\pytools\gen-projects\{{project.name}}>code .
+
+In the opened VSCode window, place break points at app_main.c and press F5 to start debugging.
 
 
 ## Build for Linux, mingw, cygwin
@@ -65,4 +65,4 @@ OS: Windows_NT x64 10.0.19042
 
 ## TODO:
 
-	Linux Remote Debugging with VSCode
+    Linux Remote Debugging with VSCode
