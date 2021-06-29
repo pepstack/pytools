@@ -1,19 +1,23 @@
 {
-  "configurations": [
-    {
-      "name": "Win32",
-      "windowsSdkVersion": "10.0.18362.0",
-      "compilerPath": "${env:MSYS64_HOME}/mingw64/bin/gcc",
-      "includePath": [
-        "${env:MSYS64_HOME}/mingw64/include"
-      ],
-      "defines": [
-        "_DEBUG",
-        "UNICODE",
-        "_UNICODE"
-      ],
-      "intelliSenseMode": "gcc-x64"
-    }
-  ],
-  "version": 4
+    "configurations": [
+        {
+            "name": "mingw x64 debug",
+            "windowsSdkVersion": "10.0.18362.0",
+            "compilerPath": "${env:MSYS64_ROOT_BASH}/mingw64/bin/gcc.exe",
+            "includePath": [
+                "${env:MSYS64_ROOT_BASH}/mingw64/include",
+                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/src",
+                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/libclogger",
+                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/pthreads-w32/Pre-built.2/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "__MINGW64__"
+            ],
+            "intelliSenseMode": "gcc-x64"
+        }
+    ],
+    "version": 4
 }

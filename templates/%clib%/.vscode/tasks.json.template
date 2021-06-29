@@ -1,19 +1,31 @@
 {
-  // See https://go.microsoft.com/fwlink/?LinkId=733558
-  // for the documentation about the tasks.json format
-  "version": "2.0.0",
-  "tasks": [
-	{
-	  "label": "make",
-	  "type": "shell",
-	  "command": "{{project.rootdir}}/mingw64-make.sh",
-	  "problemMatcher": [
-		  "$gcc"
-	  ],
-	  "group": {
-		"kind": "build",
-		"isDefault": true
-	  }
-	}
-  ]
+	// See https://go.microsoft.com/fwlink/?LinkId=733558
+	// for the documentation about the tasks.json format
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "mingw64-make-dbg64",
+			"type": "shell",
+			"command": "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/mingw64-make-dbg64.sh",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "Task: test vars",
+			"type": "shell",
+			"command": "echo",
+			"args": [
+				"${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
+		}
+	]
 }

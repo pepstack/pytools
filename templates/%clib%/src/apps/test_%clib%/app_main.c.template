@@ -41,6 +41,8 @@ int main(int argc, char *argv[])
 
 #ifdef HAS_LIBCLOGGER
     LOGGER_INFO(app_logger, "starting. lib: %s-%s", libname, libversion);
+#else
+    printf("starting. lib: %s-%s", libname, libversion);
 #endif
 
     // TODO:
@@ -50,6 +52,5 @@ int main(int argc, char *argv[])
     LOGGER_INFO(app_logger, "app end.");
 #endif
 
-    system("pause");
     return 0;
 }
