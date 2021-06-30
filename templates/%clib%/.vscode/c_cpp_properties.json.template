@@ -1,7 +1,7 @@
 {
     "configurations": [
         {
-            "name": "mingw x64 debug",
+            "name": "mingw64 build config",
             "windowsSdkVersion": "10.0.18362.0",
             "compilerPath": "${env:MSYS64_ROOT_BASH}/mingw64/bin/gcc.exe",
             "includePath": [
@@ -15,6 +15,20 @@
                 "UNICODE",
                 "_UNICODE",
                 "__MINGW64__"
+            ],
+            "intelliSenseMode": "gcc-x64"
+        },
+        {
+            "name": "linux64 build config",
+            "compilerPath": "/usr/bin/gcc",
+            "includePath": [
+				"/usr/include",
+				"/usr/local/include",
+		        "${workspaceFolder}/src",
+                "${workspaceFolder}/deps/libclogger"
+            ],
+            "defines": [
+                "_DEBUG"
             ],
             "intelliSenseMode": "gcc-x64"
         }

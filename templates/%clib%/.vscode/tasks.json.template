@@ -4,9 +4,21 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "mingw64-make-dbg64",
+			"label": "mingw-make-debug-x64",
 			"type": "shell",
-			"command": "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/mingw64-make-dbg64.sh",
+			"command": "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/make-dbg-x64.sh",
+			"problemMatcher": [
+				"$gcc"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"label": "linux-make-debug-x64",
+			"type": "shell",
+			"command": "${workspaceFolder}/make-dbg-x64.sh",
 			"problemMatcher": [
 				"$gcc"
 			],

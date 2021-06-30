@@ -63,6 +63,9 @@ def render_file(srcfile, dstfile, projectCfg):
     )
 
     util.create_outfile(dstfile, writeout_cb, content)
+
+    if dstfile.endswith(".sh"):
+        os.chmod(dstfile, stat.S_IRWXU)
     pass
 
 
