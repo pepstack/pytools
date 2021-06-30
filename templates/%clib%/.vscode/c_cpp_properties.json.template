@@ -7,7 +7,7 @@
             "includePath": [
                 "${env:MSYS64_ROOT_BASH}/mingw64/include",
                 "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/src",
-                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/libclogger",
+                "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/libclogger/include",
                 "${env:WORKSPACE_ROOT_BASH}/${workspaceFolderBasename}/deps/pthreads-w32/Pre-built.2/include"
             ],
             "defines": [

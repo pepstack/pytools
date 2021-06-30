@@ -3,7 +3,7 @@
     "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
     "window.zoomLevel": 1,
     "git.ignoreLegacyWarning": true,
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "terminal.integrated.profiles.windows": {
         "msys64-bash": {
             "path": [
