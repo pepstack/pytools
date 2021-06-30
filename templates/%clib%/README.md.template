@@ -47,7 +47,17 @@ Append to Path some environment variables in my case:
 
     Path=...;%MSYS64_HOME%;%MSYS64_HOME%\usr\bin;C:\DEVPACK\MicrosoftVSCode;C:\DEVPACK\MicrosoftVSCode\bin;
 
+Create a link to drive, in my case is: "/C" -> "C:\"
+
+	C:\>mklink /J "/C" "C:\"
+
+If your project lies at other drive such as E:, you might:
+
+    C:\>mklink /J "/E" "E:\"
+
 Note: You might change them if your paths are different from those above !
+
+	  Close 360 Safe Guard (360安全卫士) since it can hamper building process.
 
 Then open cmd (windows shell) and type command 'code .' in the .vscode folder:
 
