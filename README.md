@@ -97,27 +97,36 @@ NOTE: default config yaml file for sample.py (sample.yaml) lies at:
 
 按照项目模板(在 templates 目录下) 自动生成项目。默认提供的模板(%clib%)是一个 C 语言的静态库+动态库+测试程序。
 
-按照这个模板(%clib%)生成一个你自己的项目，输入下面的命令：
+按照这个模板(%clib%)生成一个你自己的项目 (例如项目名：myclib)，输入下面的命令：
 
-  tools/gen_project.py --project=pureclib --force
+  tools/gen_project.py --project=myclib
 
-生成的项目 pureclib 默认在 gen-projects 目录下。同时项目打包文件: clib-$timestamp.tar.gz 
+生成的项目 myclib-$timestamp 默认(未通过--output-dir 指定)在环境变量 ${WORKSPACE_ROOT_BASH} 指向的目录下。同时 gen-projects 目录下有项目打包文件:
 
-生成的项目支持下面几种方式编译, 例如:
+  myclib-$timestamp.tar.gz
 
-	1) 使用 vs2015+ 打开 gen-projects/pureclib/msvc/pureclib-ALL-vs2015.sln，生成全部。
+其中：$timestamp 是当前项目生成的时间戳。
+
+
+项目 myclib 支持下面几种方式编译:
+
+	1) 使用 vs2015+ 编译和调试 Windows 版本。打开 ${WORKSPACE_ROOT_BASH}/myclib-$timestamp/msvc/myclib-ALL-vs2015.sln，生成全部。
 
 	2) 使用 cygwin, mingw, linux shell 编译
 
-		cd gen-projects/pureclib
+		$ cd ${WORKSPACE_ROOT_BASH}/myclib-$timestamp/
 
-		make clean && make dist
+		$ make help
 
-示例项目包文件 clib-20210618.191227.tar.gz 是用下面的命令自动生成的:
+	3) 在 Windows 上使用 VSCode 本地调试 Windows 上的项目(要求 mingw)
+	
+		使用 VSCode 打开本地项目(项目目录必须在 ${WORKSPACE_ROOT_BASH} 下)：${WORKSPACE_ROOT_BASH}/myclib-$timestamp/
 
-	tools/gen_project.py --force
-
-同时生成的项目目录位置在: gen-projects/clib-20210618.191227
+	4) 在 Windows 上使用 VSCode 远程调试 Linux 上的项目
+	
+		使用 VSCode 打开远程(Linux)上的项目目录(项目目录位置任意)：/path/to/myclib-$timestamp/
+	
+	务必参考项目的 README.md 文件获取更多帮助！
 
 TODO:
 

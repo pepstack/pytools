@@ -4,7 +4,7 @@
 # @file: gen_project.py
 #
 #   根据模板自动生成项目
-#
+# 2021-07-01
 ########################################################################
 from __future__ import print_function
 import os, sys, stat, signal, shutil, inspect, commands, time, datetime
@@ -108,7 +108,21 @@ def main(parser):
     # 模板根目录
     templateProjectDir = os.path.join(pytools_root, "templates", "%" + options.template + "%")
 
-    generateProjectDir = os.path.join(os.path.realpath(options.output_dir), options.project + "-" + project_timestamp)
+    #输出目录支持用环境变量: ${env:WORKSPACE_ROOT_BASH}
+    output_absdir = None
+    if options.output_dir.startswith("${env:") and options.output_dir.endswith("}"):
+        envVar = options.output_dir[6:-1]
+        output_absdir = os.getenv(envVar)
+        if output_absdir is None:
+            elog.error("environment variable not set: %s", envVar);
+            sys.exit(1)
+    else:
+        output_absdir = os.path.realpath(options.output_dir)
+
+    generateProjectDir = os.path.join(output_absdir, options.project + "-" + project_timestamp)
+
+    if osname.startswith("cygwin_nt"):
+        generateProjectDir = "/cygdrive" + generateProjectDir
 
     kvpairs, varsdict = options.vars.split('&'), ddict.dotdict()
     for pair in kvpairs:
@@ -155,7 +169,7 @@ def main(parser):
             ],
             copy_project_cb, projectCfg)
 
-    genPackageFile = os.path.join(pytools_root, os.path.basename(generateProjectDir) + ".tar.gz")
+    genPackageFile = os.path.join(pytools_root, "gen-projects", os.path.basename(generateProjectDir) + ".tar.gz")
 
     util.compress_targz(genPackageFile, generateProjectDir)
 
@@ -179,6 +193,64 @@ if __name__ == "__main__":
         usage = "%prog [Options]",
         group_options = os.path.join(APPHOME, "options", APPNAME + ".yaml")
     )
+
+    if osname.startswith("cygwin_nt"):
+        elog.info("checking environments for Windows:")
+
+        env_MSYS2_PATH_TYPE = os.getenv('MSYS2_PATH_TYPE')
+        env_MSYS64_HOME = os.getenv('MSYS64_HOME')
+        env_MSYS64_ROOT_BASH = os.getenv('MSYS64_ROOT_BASH')
+        env_WORKSPACE_ROOT_BASH = os.getenv('WORKSPACE_ROOT_BASH')
+
+        elog.force_clean("MSYS2_PATH_TYPE=%s", env_MSYS2_PATH_TYPE)
+        elog.force_clean("MSYS64_HOME=%s", env_MSYS64_HOME)
+        elog.force_clean("MSYS64_ROOT_BASH=%s", env_MSYS64_ROOT_BASH)
+        elog.force_clean("WORKSPACE_ROOT_BASH=%s", env_WORKSPACE_ROOT_BASH)
+
+        if env_MSYS2_PATH_TYPE is None:
+            elog.error("${env:MSYS2_PATH_TYPE} not found")
+            sys.exit(1)
+
+        if env_MSYS64_HOME is None:
+            elog.error("${env:MSYS64_HOME} not found")
+            sys.exit(1)
+
+        if env_MSYS64_ROOT_BASH is None:
+            elog.error("${env:MSYS64_ROOT_BASH} not found")
+            sys.exit(1)
+
+        if env_WORKSPACE_ROOT_BASH is None:
+            elog.error("${env:WORKSPACE_ROOT_BASH} not found")
+            sys.exit(1)
+
+        if env_MSYS2_PATH_TYPE != "inherit":
+            elog.error("${env:MSYS2_PATH_TYPE} not inherit")
+            sys.exit(1)        
+
+        if env_MSYS64_HOME.startswith("/") or env_MSYS64_HOME.find("/") != -1 or env_MSYS64_HOME.find(" ") != -1:
+            elog.error("${env:MSYS64_HOME} not a Windows path. for example: MSYS64_HOME=C:\DEVPACK\msys64")
+            sys.exit(1)
+
+        if not env_MSYS64_ROOT_BASH.startswith("/") or env_MSYS64_ROOT_BASH.find("\\") != -1 or env_MSYS64_ROOT_BASH.find(" ") != -1:
+            elog.error("${env:MSYS64_ROOT_BASH} not a bash path. for example: MSYS64_ROOT_BASH=/C/DEVPACK/msys64")
+            sys.exit(1)
+
+        if not env_WORKSPACE_ROOT_BASH.startswith("/") or env_WORKSPACE_ROOT_BASH.find("\\") != -1 or env_WORKSPACE_ROOT_BASH.find(" ") != -1:
+            elog.error("${env:WORKSPACE_ROOT_BASH} not a bash path. for example: WORKSPACE_ROOT_BASH=/C/Users/cheungmine/Workspace/github.com")
+            sys.exit(1)
+
+        WPath = env_MSYS64_HOME.upper()
+        for Drv in ["C:\\", "D:\\", "E:\\", "F:\\", "G:\\", "H:\\", "J:\\", "K:\\", "\\"]:
+            if WPath.startswith(Drv):
+                break
+        if Drv == "\\":
+            elog.error("${env:MSYS64_HOME} not a Windows path. for example: MSYS64_HOME=C:\DEVPACK\msys64")
+            sys.exit(1)
+
+        BashPath = "/" + env_MSYS64_HOME[0:1] + "/" + env_MSYS64_HOME[3:].replace("\\", "/")
+        if BashPath != env_MSYS64_ROOT_BASH:
+            elog.error("${env:WORKSPACE_ROOT_BASH} not a slash(/) path equivalent of ${env:MSYS64_HOME}")
+            sys.exit(1)
 
     # 主函数
     main(parser)

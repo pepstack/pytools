@@ -54,7 +54,7 @@ main:
 
         - output_dir:
             optarg: '-D --output-dir'
-            default: '$APPHOME/../gen-projects'
+            default: '${env:WORKSPACE_ROOT_BASH}'
             help: 'dir for output generated project'
             metavar: PATH
 

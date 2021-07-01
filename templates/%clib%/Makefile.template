@@ -162,7 +162,7 @@ ifeq ($(MINGW_FLAG), 1)
 	MINGW_LINKS = -lws2_32
 else
 	MINGW_CSRCS =
-	MINGW_LINKS =
+	MINGW_LINKS = -lrt
 endif
 
 MINGW_COBJS = $(patsubst %.c, %.o, $(notdir $(MINGW_CSRCS)))
@@ -244,8 +244,7 @@ test_{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.
 	-o $@ \
 	$({{project.NAME}}_STATIC_LIB) \
 	$(LDFLAGS) \
-	$(MINGW_LINKS) \
-	-lrt
+	$(MINGW_LINKS)
 	ln -sf $@ test_{{project.name}}
 
 
@@ -256,8 +255,7 @@ test_{{project.name}}dll.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_ma
 	-o $@ \
 	$({{project.NAME}}_DYNAMIC_LIB) \
 	$(LDFLAGS) \
-	$(MINGW_LINKS) \
-	-lrt
+	$(MINGW_LINKS)
 	ln -sf $@ test_{{project.name}}dll
 
 
