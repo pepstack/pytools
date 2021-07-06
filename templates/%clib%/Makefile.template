@@ -290,6 +290,8 @@ clean:
 	-rm -rf ./msvc/test_{{project.name}}dll/target
 	-rm -f test_{{project.name}}.exe.$(OSARCH)
 	-rm -f test_{{project.name}}dll.exe.$(OSARCH)
+	-rm -f test_{{project.name}}
+	-rm -f test_{{project.name}}dll
 	-rm -f ./msvc/*.VC.db
 
 
