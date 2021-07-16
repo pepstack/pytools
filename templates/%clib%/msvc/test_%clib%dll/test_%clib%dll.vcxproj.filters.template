@@ -2,17 +2,17 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="src">
-      <UniqueIdentifier>{{project.Guids[40]}}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="resources">
-      <UniqueIdentifier>{{project.Guids[41]}}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+      <UniqueIdentifier>{{project.Guids[117]}}</UniqueIdentifier>
     </Filter>
 	<Filter Include="common">
-      <UniqueIdentifier>{{project.Guids[42]}}</UniqueIdentifier>
+      <UniqueIdentifier>{{project.Guids[118]}}</UniqueIdentifier>
     </Filter>
     <Filter Include="common\win32">
-      <UniqueIdentifier>{{project.Guids[43]}}</UniqueIdentifier>
+      <UniqueIdentifier>{{project.Guids[119]}}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="resources">
+      <UniqueIdentifier>{{project.Guids[120]}}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>

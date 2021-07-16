@@ -147,7 +147,7 @@ def main(parser):
     except:
         pass
 
-    uuids = []
+    uuids = ['{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}']
     for i in range(0, options.num_uuids):
         uuids.append("{" + str(uuid.uuid4()).upper() + "}")
 

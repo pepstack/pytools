@@ -37,7 +37,7 @@ main:
             help: 'logger name in log config file'
 
         - num_uuids:
-            default: 100
+            default: 200
             type: int
             help: 'max number of uuids'
             metavar: NUM

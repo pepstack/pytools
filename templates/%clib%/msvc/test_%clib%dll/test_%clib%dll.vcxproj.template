@@ -85,28 +85,28 @@
     <IncludePath>..\..\src;..\..\dist\lib{{project.name}}-{{project.vars.version}}\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>..\..\src;..\..\dist\lib{{project.name}}-{{project.vars.version}}\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\..\src;..\..\dist\lib{{project.name}}-{{project.vars.version}}\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win86\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x86;..\..\deps\libclogger\lib\win86\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <IncludePath>..\..\src;..\..\dist\lib{{project.name}}-{{project.vars.version}}\include;..\..\deps\pthreads-w32\Pre-built.2\include;..\..\deps\libclogger\include;$(IncludePath)</IncludePath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\Release;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win64\$(Configuration);..\..\deps\pthreads-w32\Pre-built.2\lib\x64;..\..\deps\libclogger\lib\win64\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

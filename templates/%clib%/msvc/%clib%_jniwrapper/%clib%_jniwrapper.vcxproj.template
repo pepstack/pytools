@@ -73,28 +73,28 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;../../jni/src/main/java;../../dist/lib{{project.name}}-{{project.vars.version}}/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>../../dist/lib{{project.name}}-{{project.vars.version}}/lib/win86/Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\lib{{project.name}}-{{project.vars.version}}\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win86\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;../../jni/src/main/java;../../dist/lib{{project.name}}-{{project.vars.version}}/include;$(IncludePath)</IncludePath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\lib{{project.name}}-{{project.vars.version}}\include;$(IncludePath)</IncludePath>
     <ReferencePath>$(ReferencePath)</ReferencePath>
-    <LibraryPath>../../dist/lib{{project.name}}-{{project.vars.version}}/lib/win64/Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win64\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;../../jni/src/main/java;../../dist/lib{{project.name}}-{{project.vars.version}}/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>../../dist/lib{{project.name}}-{{project.vars.version}}/lib/win86/Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\lib{{project.name}}-{{project.vars.version}}\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win86\$(Configuration);$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(JAVA_HOME)/include;$(JAVA_HOME)/include/win32;../../jni/src/main/java;../../dist/lib{{project.name}}-{{project.vars.version}}/include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
-    <LibraryPath>../../dist/lib{{project.name}}-{{project.vars.version}}/lib/win64/Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(JAVA_HOME)\include;$(JAVA_HOME)\include\win32;..\..\jni\src\main\java;..\..\dist\lib{{project.name}}-{{project.vars.version}}\include;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
+    <LibraryPath>..\..\dist\lib{{project.name}}-{{project.vars.version}}\lib\win64\$(Configuration);$(LibraryPath)</LibraryPath>
     <OutDir>$(ProjectDir)target\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)build\$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>

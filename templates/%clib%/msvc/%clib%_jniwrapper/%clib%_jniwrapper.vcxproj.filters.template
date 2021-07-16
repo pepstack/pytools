@@ -2,11 +2,11 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="resources">
-      <UniqueIdentifier>{{project.Guids[50]}}</UniqueIdentifier>
+      <UniqueIdentifier>{{project.Guids[104]}}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
     <Filter Include="jni">
-      <UniqueIdentifier>{{project.Guids[51]}}</UniqueIdentifier>
+      <UniqueIdentifier>{{project.Guids[105]}}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

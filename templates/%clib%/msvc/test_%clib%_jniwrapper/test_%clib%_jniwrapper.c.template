@@ -101,9 +101,9 @@ void createJVM()
         exit(-1);
     }
 
-	options[0].optionString = "-Djava.compiler=NONE";
+    options[0].optionString = "-Djava.compiler=NONE";
     options[1].optionString = classpath;
-	options[2].optionString = "-verbose:jni";
+    options[2].optionString = "-verbose:jni";
 
     vm_args.version = JNI_VERSION_1_8;
     vm_args.ignoreUnrecognized = JNI_TRUE;
@@ -112,13 +112,13 @@ void createJVM()
 
     // 务必关闭异常: (VS2015: Ctrl+Alt+E -> Win32 Exceptioins -> 0xc0000005 Access violation)
     //   https://stackoverflow.com/questions/36250235/exception-0xc0000005-from-jni-createjavavm-jvm-dll
-	res = jvm_CreateJavaVM(&jvm, &jenv, &vm_args);
-	if (res == 0) {
-		printf("successfully created JVM.\n");
-	} else {
-		printf("failed to create JVM.\n");
+    res = jvm_CreateJavaVM(&jvm, &jenv, &vm_args);
+    if (res == 0) {
+        printf("successfully created JVM.\n");
+    } else {
+        printf("failed to create JVM.\n");
         exit(-1);
-	}
+    }
 }
 
 
