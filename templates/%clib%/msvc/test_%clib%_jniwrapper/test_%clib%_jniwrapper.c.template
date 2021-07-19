@@ -7,7 +7,7 @@
 #include <common/cstrbuf.h>
 #include <common/emerglog.h>
 
-#include <com_github_jni_JNIWrapper.h>
+#include <com_github_jni_lib{{project.name}}_JNIWrapper.h>
 
 
 static const char THIS_FILE[] = "test_{{project.name}}_jniwrapper.c";
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 
     atexit(appexit_cleanup);
 
-    Java_com_github_jni_JNIWrapper_JNI_1{{project.name}}_1lib_1version(jenv, obj);
+    Java_com_github_jni_lib{{project.name}}_JNIWrapper_JNI_1{{project.name}}_1lib_1version(jenv, obj);
 
     return 0;
 }

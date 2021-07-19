@@ -1,12 +1,12 @@
 /**
  * com_github_jni_JNIWrapper.c
  */
-#include "com_github_jni_JNIWrapper.h"
+#include "com_github_jni_lib{{project.name}}_JNIWrapper.h"
 
 #include <{{project.name}}/{{project.name}}_api.h>
 
 
-void JNICALL Java_com_github_jni_JNIWrapper_JNI_1{{project.name}}_1lib_1version(JNIEnv *env, jobject obj)
+void JNICALL Java_com_github_jni_lib{{project.name}}_JNIWrapper_JNI_1{{project.name}}_1lib_1version(JNIEnv *env, jobject obj)
 {
     const char *libname;
     const char * libversion = {{project.name}}_lib_version(&libname);

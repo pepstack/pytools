@@ -1,14 +1,12 @@
 /**
- * JNIWrapper.java
- *
- *   $ cd $projectdir/jni/src/main/java
- *   $ javah -classpath . -jni com.github.jni.JNIWrapper
+ * JNIUtils.java
  */
 package com.github.jni;
 
-public class JNIWrapper {
 
-	public static String getJarPath(Class clazz) {
+public class JNIUtils {
+
+    public static String getJarPath(Class clazz) {
         String path = clazz.getProtectionDomain().getCodeSource().getLocation().getFile();
         try {
             path = java.net.URLDecoder.decode(path, "UTF-8");
@@ -19,6 +17,7 @@ public class JNIWrapper {
         }
         return null;
     }
+
 
     public static String getParentPath(String spath) {
         try {
@@ -31,7 +30,8 @@ public class JNIWrapper {
         return null;
     }
 
-	public static String concatPaths(String path, String...paths) {
+
+    public static String concatPaths(String path, String...paths) {
         final String sep = System.getProperty("file.separator");
 
         int i, j, found;
@@ -65,42 +65,46 @@ public class JNIWrapper {
     }
 
 
-	static {
-		// https://blog.csdn.net/forandever/article/details/5983846
-		//   java.library.path=/path/to/{{project.name}}_jniwrapper.dll
-        //System.loadLibrary("{{project.name}}_jniwrapper");
-		
-		final String osName = System.getProperty("os.name");
-		final String osVer = System.getProperty("os.version");
-		final String osArch = System.getProperty("os.arch");
-		final String archBits = System.getProperty("sun.arch.data.model");
+    public static String getJniLibsPrefix(Boolean isDebug) {
+        final String osName = System.getProperty("os.name");
+        final String osVer = System.getProperty("os.version");
+        final String osArch = System.getProperty("os.arch");
+        final String archBits = System.getProperty("sun.arch.data.model");
 
-		if (osName.indexOf("Windows") != -1) {
-			// win86|win64, Debug|Release
-			String buildConfig;
-			if (archBits.equals("64")) {
-				buildConfig = JNIWrapper.concatPaths("win64", "Release");
-			} else {
-				buildConfig = JNIWrapper.concatPaths("win86", "Release");
-			}
+        String buildMode = null;
+        if (isDebug != null) {
+            if (isDebug) {
+                buildMode = "Debug";
+            } else {
+                buildMode = "Release";
+            }
+        }
 
-			final String jniLibsPrefix = JNIWrapper.concatPaths(JNIWrapper.getParentPath(JNIWrapper.getJarPath(JNIWrapper.class)), "libs", buildConfig);
+        if (osName.indexOf("Windows") != -1) {
+            // win86|win64, Debug|Release
+            String buildConfig;
 
-			System.load(JNIWrapper.concatPaths(jniLibsPrefix, "lib{{project.name}}_dll.dll"));
-			System.load(JNIWrapper.concatPaths(jniLibsPrefix, "{{project.name}}_jniwrapper.dll"));
-		} else if (osName.indexOf("Linux") != -1) {
-			// TODO:
-		} else {
-			// TODO:
-		}
-	}
+            if (archBits.equals("64")) {
+                if (buildMode == null) {
+                    buildConfig = "win64";
+                } else {
+                    buildConfig = JNIUtils.concatPaths("win64", buildMode);
+                }
+            } else {
+                if (buildMode == null) {
+                    buildConfig = "win86";
+                } else {
+                    buildConfig = JNIUtils.concatPaths("win86", buildMode);
+                }
+            }
 
-    public native void JNI_{{project.name}}_lib_version();
+            return JNIUtils.concatPaths(JNIUtils.getParentPath(JNIUtils.getJarPath(JNIUtils.class)), "libs", buildConfig);
+        } else if (osName.indexOf("Linux") != -1) {
+            // TODO:
+        } else {
+            // TODO:
+        }
 
-
-    public static void main(String[] args) {
-        JNIWrapper jniCall = new JNIWrapper();
-
-		jniCall.JNI_{{project.name}}_lib_version();
+        return null;
     }
 }
