@@ -1,7 +1,7 @@
 /**
- * com_github_jni_JNIWrapper.c
+ * {{project.name}}_jniwrapper.c
  */
-#include "com_github_jni_lib{{project.name}}_JNIWrapper.h"
+#include <com_github_jni_lib{{project.name}}_JNIWrapper.h>
 
 #include <{{project.name}}/{{project.name}}_api.h>
 
@@ -11,5 +11,5 @@ void JNICALL Java_com_github_jni_lib{{project.name}}_JNIWrapper_JNI_1{{project.n
     const char *libname;
     const char * libversion = {{project.name}}_lib_version(&libname);
 
-    printf("Java_com_github_jni_JNIWrapper_JNI_1{{project.name}}_1lib_1version: %s-%s\n", libname, libversion);
+    printf("Java_com_github_jni_lib{{project.name}}_JNIWrapper_JNI_1{{project.name}}_1lib_1version: %s-%s\n", libname, libversion);
 }
