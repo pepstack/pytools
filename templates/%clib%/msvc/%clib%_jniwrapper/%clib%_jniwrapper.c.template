@@ -11,5 +11,5 @@ void JNICALL Java_com_github_jni_lib{{project.name}}_JNIWrapper_JNI_1{{project.n
     const char *libname;
     const char * libversion = {{project.name}}_lib_version(&libname);
 
-    printf("Java_com_github_jni_lib{{project.name}}_JNIWrapper_JNI_1{{project.name}}_1lib_1version: %s-%s\n", libname, libversion);
+    printf("[%s:%d %s] %s-%s\n", __FILE__, __LINE__, __FUNCTION__, libname, libversion);
 }
