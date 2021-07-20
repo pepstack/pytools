@@ -226,7 +226,7 @@ $({{project.NAME}}_STATIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 	$(CC) $(CFLAGS) -shared \
 		-Wl,--soname=$({{project.NAME}}_DYNAMIC_LIB) \
-		-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
+		-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/libs:$(PREFIX)/libs/lib' \
 		-o $@ \
 		$^ \
 		$(LDFLAGS) \
@@ -252,7 +252,7 @@ test_{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.
 test_{{project.name}}dll.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.c
 	@echo Building test_{{project.name}}dll.exe.$(OSARCH)
 	$(CC) $(CFLAGS) $< $(INCDIRS) \
-	-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/../lib:$(PREFIX)/../libs/lib' \
+	-Wl,--rpath='$(PREFIX):$(PREFIX)/lib:$(PREFIX)/libs:$(PREFIX)/libs/lib' \
 	-o $@ \
 	$({{project.NAME}}_DYNAMIC_LIB) \
 	$(LDFLAGS) \
