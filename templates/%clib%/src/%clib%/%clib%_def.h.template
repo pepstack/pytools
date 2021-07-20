@@ -1,8 +1,15 @@
 /**
- * {{project.name}}_def.h
+ * @file {{project.name}}_def.h
+ * @brief lib{{project.name}} public definitions.
+ *
+ * @author {{project.vars.author}}
+ * @version
+ * @date
+ * @note
+ * @since
  */
-#ifndef {{project.NAME}}_DEF_H_INCLUDED
-#define {{project.NAME}}_DEF_H_INCLUDED
+#ifndef {{project.NAME}}_DEF_H_PUBLIC
+#define {{project.NAME}}_DEF_H_PUBLIC
 
 #if defined(__cplusplus)
 extern "C" {
@@ -38,4 +45,4 @@ typedef int {{project.NAME}}_RESULT;
 }
 #endif
 
-#endif /* {{project.NAME}}_DEF_H_INCLUDED */
+#endif /* {{project.NAME}}_DEF_H_PUBLIC */

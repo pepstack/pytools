@@ -11,3 +11,5 @@ const char * {{project.name}}_lib_version(const char **_libname)
     }
     return LIBVERSION;
 }
+
+// TODO: add others functions

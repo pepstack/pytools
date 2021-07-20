@@ -111,6 +111,7 @@ LIBCLOGGER_DIR = $(PREFIX)/deps/libclogger
 
 # Given dirs for all source (*.c) files
 SRC_DIR = $(PREFIX)/src
+LIBS_DIR = $(PREFIX)/libs
 COMMON_DIR = $(SRC_DIR)/common
 APPS_DIR = $(SRC_DIR)/apps
 
@@ -153,7 +154,7 @@ INCDIRS += -I$(PREFIX) \
 	-I$(SRC_DIR) \
 	-I$(COMMON_DIR) \
 	-I$(LIBCLOGGER_DIR)/include \
-	-I$({{project.NAME}}_DIR) \
+	-I$({{project.NAME}}_DIR)
 #...
 
 

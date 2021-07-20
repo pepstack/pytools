@@ -1,5 +1,12 @@
 /**
- * {{project.name}}_api.h
+ * @file {{project.name}}_api.h
+ * @brief lib{{project.name}} public api.
+ *
+ * @author {{project.vars.author}}
+ * @version
+ * @date
+ * @note
+ * @since
  */
 #ifndef {{project.NAME}}_API_H_PUBLIC
 #define {{project.NAME}}_API_H_PUBLIC
