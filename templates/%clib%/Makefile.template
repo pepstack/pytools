@@ -4,7 +4,7 @@
 #
 # Author: 350137278@qq.com
 #
-# Update: 2021-06-22
+# Update: 2021-08-06
 #
 # Show all predefinitions of gcc:
 #
@@ -24,8 +24,16 @@ BUILDCFG = release
 # 32 | 64 (default)
 BITS = 64
 
-# Is MINGW(1) or not(0)
-MINGW_FLAG = 0
+# is MINGW(1) or not(0)
+ifneq ($(findstring $(OSARCH),  "MSYS_NT MINGW64_NT MINGW32_NT"),)
+    MINGW_FOUND=1
+else
+    MINGW_FOUND=0
+endif
+
+#ifeq ($(MINGW_FOUND), 0)
+#  $(error $(OSARCH) not supported !)
+#endif
 
 ###########################################################
 # Compiler Specific Configuration
@@ -67,22 +75,7 @@ else
 endif
 
 
-ifeq ($(OSARCH), MSYS_NT)
-	MINGW_FLAG = 1
-	ifeq ($(BITS), 64)
-		CFLAGS += -D__MINGW64__
-	else
-		CFLAGS += -D__MINGW32__
-	endif
-else ifeq ($(OSARCH), MINGW64_NT)
-	MINGW_FLAG = 1
-	ifeq ($(BITS), 64)
-		CFLAGS += -D__MINGW64__
-	else
-		CFLAGS += -D__MINGW32__
-	endif
-else ifeq ($(OSARCH), MINGW32_NT)
-	MINGW_FLAG = 1
+ifeq ($(MINGW_FOUND), 1)
 	ifeq ($(BITS), 64)
 		CFLAGS += -D__MINGW64__
 	else
@@ -107,6 +100,7 @@ DISTROOT = $(PREFIX)/dist
 APPS_DISTROOT = $(DISTROOT)/apps
 
 LIBCLOGGER_DIR = $(PREFIX)/deps/libclogger
+LIBDL_DIR = $(PREFIX)/deps/libdl
 
 
 # Given dirs for all source (*.c) files
@@ -154,16 +148,19 @@ INCDIRS += -I$(PREFIX) \
 	-I$(SRC_DIR) \
 	-I$(COMMON_DIR) \
 	-I$(LIBCLOGGER_DIR)/include \
+	-I$(LIBDL_DIR)/include \
 	-I$({{project.NAME}}_DIR)
 #...
 
+DEPLIBS = \
+	$(LIBCLOGGER_DIR)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)/libclogger.a
 
-ifeq ($(MINGW_FLAG), 1)
+ifeq ($(MINGW_FOUND), 1)
 	MINGW_CSRCS = $(COMMON_DIR)/win32/syslog-client.c
-	MINGW_LINKS = -lws2_32
+	MINGW_LINKS = -lws2_32 $(LIBDL_DIR)/lib/$(OSARCH)/$(BITS)/$(BUILDCFG)/libdl.a
 else
 	MINGW_CSRCS =
-	MINGW_LINKS = -lrt
+	MINGW_LINKS = -lrt -ldl
 endif
 
 MINGW_COBJS = $(patsubst %.c, %.o, $(notdir $(MINGW_CSRCS)))
@@ -230,6 +227,7 @@ $({{project.NAME}}_DYNAMIC_LIB).$(OSARCH): $(COBJS) $(MINGW_COBJS)
 		-o $@ \
 		$^ \
 		$(LDFLAGS) \
+		$(DEPLIBS) \
 		$(MINGW_LINKS)
 	ln -s $@ $({{project.NAME}}_DYNAMIC_LIB)
 #----------------------------------------------------------
@@ -245,6 +243,7 @@ test_{{project.name}}.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_main.
 	-o $@ \
 	$({{project.NAME}}_STATIC_LIB) \
 	$(LDFLAGS) \
+	$(DEPLIBS) \
 	$(MINGW_LINKS)
 	ln -sf $@ test_{{project.name}}
 
@@ -256,6 +255,7 @@ test_{{project.name}}dll.exe.$(OSARCH): $(APPS_DIR)/test_{{project.name}}/app_ma
 	-o $@ \
 	$({{project.NAME}}_DYNAMIC_LIB) \
 	$(LDFLAGS) \
+	$(DEPLIBS) \
 	$(MINGW_LINKS)
 	ln -sf $@ test_{{project.name}}dll
 
