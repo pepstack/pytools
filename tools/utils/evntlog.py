@@ -23,6 +23,8 @@
 #######################################################################
 import os, sys, inspect, time, datetime, types, logging
 
+
+
 if sys.version_info < (3, 0):
     import ConfigParser
     reload(sys)
@@ -36,7 +38,7 @@ else:
 
 #######################################################################
 # public functions
-import logging, logging.config
+import logging.config
 
 # you can modify below 3 lines:
 #
