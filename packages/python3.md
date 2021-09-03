@@ -1,4 +1,4 @@
-## install yaml, jinja2 for python3 on msys2
+## install yaml, jinja2 for python3 on msys2 (Windows)
 
 
 	$ pacman -S libcrypt libcrypt-devel openssl openssl-devel python-pip
@@ -22,3 +22,13 @@
 	$ python setup.py install
 
 	$ pip install jinja2
+
+## install yaml, jinja2 for python3 on cmd (Windows)
+
+- install python-3.9.6-amd64.exe
+
+- open cmd and types:
+
+	> pip install yaml
+
+	> pip install jinja2

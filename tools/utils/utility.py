@@ -434,6 +434,7 @@ def init_parser_group(**kargs):
             fd = open_file(options_file, 'r')
 
             with fd:
+                # optscfg = yamlmod.safe_load(fd)
                 data = fd.read()
                 optscfg = yamlmod.load(data, Loader=yamlmod.FullLoader)
 
