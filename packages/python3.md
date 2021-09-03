@@ -1,7 +1,6 @@
 ## install yaml, jinja2 for python3 on msys2 (Windows)
 
-
-	$ pacman -S libcrypt libcrypt-devel openssl openssl-devel python-pip
+	$ pacman -S libcrypt libcrypt-devel openssl openssl-devel libxslt-devel libxml2-devel python-pip
 
 	$ tar -zxf yaml-0.2.5.tar.gz
 
@@ -21,7 +20,8 @@
 	
 	$ python setup.py install
 
-	$ pip install jinja2
+	$ pip install jinja2 lxml
+
 
 ## install yaml, jinja2 for python3 on cmd (Windows)
 
@@ -29,6 +29,4 @@
 
 - open cmd and types:
 
-	> pip install yaml
-
-	> pip install jinja2
+	> pip install yaml jinja2 lxml
