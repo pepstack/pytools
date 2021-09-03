@@ -1,8 +1,8 @@
 # pytools
 
-A set of devops tools for python2.7.x.
+A set of devops tools for python2.7.x (Linux and Cygwin tested), python3.x (msys2 test ok)
 
-这是一套方便 Python2.7.x 脚本开发的工具箱。简单的复制几个文件，改个名字，就提供了命令行参数、日志等常用功能，大大提高开发速度。
+这是一套方便 Python2.7+, Python3+ 脚本开发的工具箱。简单的复制几个文件，改个名字，就提供了命令行参数、日志等常用功能，大大提高开发速度。
 
 请参考 tools/sample.py。默认的程序脚本 sample.py 使用同名的配置文件 options/sample.yaml。
 
@@ -29,6 +29,9 @@ A set of devops tools for python2.7.x.
 
 	$ sh ./preinstall_py27_cygwin.sh
 
+## Prepare for python3 with msys2
+
+	see packages/python3.md
 
 ## Run sample
 
