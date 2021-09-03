@@ -7,11 +7,16 @@
 # 2021-07-01
 ########################################################################
 from __future__ import print_function
-import os, sys, stat, signal, shutil, inspect, commands, time, datetime
+import os, sys, stat, signal, shutil, inspect, time, datetime
 
 import yaml, codecs, uuid, platform
 
-import optparse, ConfigParser
+import optparse
+
+if sys.version_info < (3, 0):
+    import ConfigParser
+else:
+    import configparser
 
 # http://docs.jinkan.org/docs/jinja2/
 # http://docs.jinkan.org/docs/jinja2/templates.html

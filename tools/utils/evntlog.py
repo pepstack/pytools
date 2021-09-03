@@ -23,8 +23,16 @@
 #######################################################################
 import os, sys, inspect, time, datetime, types, logging
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
+if sys.version_info < (3, 0):
+    import ConfigParser
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+elif sys.version_info <= (3, 3):
+    import configparser, imp
+    imp.reload(sys)
+else:
+    import configparser, importlib
+    importlib.reload(sys)
 
 #######################################################################
 # public functions
@@ -229,7 +237,7 @@ def update_log_config(dictcfg, logger_name, logger_file, logger_level):
             for h in dictcfg['root']['handlers']:
                 dictcfg['handlers'][h]['level'] = logger_level
     except:
-        print "error update_log_config"
+        print("error update_log_config")
         pass
 
 

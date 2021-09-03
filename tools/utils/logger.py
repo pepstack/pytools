@@ -12,8 +12,9 @@
 
 def set_logger(logger, log_path, log_level):
     import os, sys
-    import utility as util
-    import evntlog as elog
+
+    import utils.utility as util
+    import utils.evntlog as elog
 
     log_level = log_level.strip().upper()
 

@@ -36,7 +36,7 @@ class dotdict(dict):
         # We trust the dict to init itself better than we can.
         dict.__init__(self, *args, **kwargs)
         # Because of that, we do duplicate work, but it's worth it.
-        for k, v in self.iteritems():
+        for k, v in self.items():
             self.__setitem__(k, v)
 
     def __getattr__(self, k):

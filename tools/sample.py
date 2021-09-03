@@ -11,11 +11,22 @@
 # last updated: 2021-01-06
 ########################################################################
 from __future__ import print_function
-import os, sys, stat, signal, shutil, inspect, commands, time, datetime
+import os, sys, stat, signal, shutil, inspect, time, datetime
 
 import yaml, codecs, uuid, platform
 
-import optparse, ConfigParser
+import optparse
+
+if sys.version_info < (3, 0):
+    import ConfigParser
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+elif sys.version_info <= (3, 3):
+    import configparser, imp
+    imp.reload(sys)
+else:
+    import configparser, importlib
+    importlib.reload(sys)
 
 # http://docs.jinkan.org/docs/jinja2/
 # http://docs.jinkan.org/docs/jinja2/templates.html

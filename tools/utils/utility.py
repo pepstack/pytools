@@ -10,7 +10,7 @@
 #
 #######################################################################
 from __future__ import print_function
-import os, errno, sys, shutil, inspect, select, commands
+import os, errno, sys, shutil, inspect, select
 import signal, threading, collections
 import codecs, tempfile, fileinput
 
@@ -19,11 +19,18 @@ import hashlib, itertools, binascii
 import time, datetime
 from datetime import datetime, timedelta
 
-import optparse, ConfigParser
+import optparse
 
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
+if sys.version_info < (3, 0):
+    import ConfigParser
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+elif sys.version_info <= (3, 3):
+    import configparser, imp
+    imp.reload(sys)
+else:
+    import configparser, importlib
+    importlib.reload(sys)
 
 #######################################################################
 
@@ -447,7 +454,9 @@ def init_parser_group(**kargs):
 
                     if gopts:
                         for optdict in gopts:
-                            dest = optdict.keys()[0]
+                            # python3: 'dict_keys' object is not subscriptable
+                            dest = list(optdict.keys())[0]
+                            
                             optcfg = optdict[dest]
 
                             optarg = optcfg.get('optarg', "--" + dest.lower().replace("_", "-"))
@@ -494,7 +503,7 @@ def assert_notnone_attrs(options, attrs):
         for attr in attrs:
             attrval = getattr(options, attr)
             assert attrval, "attribute '%s' not given" % attr
-    except AssertionError, reason:
+    except AssertionError as reason:
         error("%s: %s" %(reason.__class__.__name__, reason))
         sys.exit(-4)
         pass
@@ -567,7 +576,7 @@ def remove_file_nothrow(fname):
             pass
 
 
-def make_dirs_nothrow(path, mode=0755):
+def make_dirs_nothrow(path, mode='0755'):
     try:
         os.makedirs(path, mode)
     except OSError as e:
