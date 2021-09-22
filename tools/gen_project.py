@@ -40,7 +40,7 @@ from utils.error import try_except_log
 
 osname = platform.system().lower()
 
-pytools_root = os.path.dirname(APPHOME)
+pytools_root = os.path.dirname(APPHOME).replace("\\", "/")
 
 ###############################################################
 @try_except_log
@@ -51,11 +51,11 @@ def writeout_cb(fout, content):
 
 @try_except_log
 def render_file(srcfile, dstfile, projectCfg):
-    elog.debug_clean("render: %s => %s",
-        os.path.relpath(srcfile, projectCfg.template_root),
-        os.path.relpath(dstfile, projectCfg.generate_root))
+    template = os.path.relpath(srcfile, projectCfg.template_root).replace("\\", "/")
 
-    j2tmpl = projectCfg.j2env.get_template(os.path.relpath(srcfile, projectCfg.template_root))
+    elog.debug_clean("render with template {%s}: %s => %s", template, srcfile, dstfile)
+
+    j2tmpl = projectCfg.j2env.get_template(template)
 
     content = j2tmpl.render(
         project = ddict.dotdict(
@@ -111,7 +111,7 @@ def main(parser):
     project_timestamp = util.nowtime('%Y%m%d.%H%M%S')
 
     # 模板根目录
-    templateProjectDir = os.path.join(pytools_root, "templates", "%" + options.template + "%")
+    templateProjectDir = os.path.join(pytools_root, "templates", "%" + options.template + "%").replace("\\", "/")
 
     #输出目录支持用环境变量: ${env:WORKSPACE_ROOT_BASH}
     output_absdir = None
@@ -124,7 +124,7 @@ def main(parser):
     else:
         output_absdir = os.path.realpath(options.output_dir)
 
-    generateProjectDir = os.path.join(output_absdir, options.project + "-" + project_timestamp)
+    generateProjectDir = os.path.join(output_absdir, options.project + "-" + project_timestamp).replace("\\", "/")
 
     if osname.startswith("cygwin_nt"):
         generateProjectDir = "/cygdrive" + generateProjectDir
@@ -174,7 +174,7 @@ def main(parser):
             ],
             copy_project_cb, projectCfg)
 
-    genPackageFile = os.path.join(pytools_root, "gen-projects", os.path.basename(generateProjectDir) + ".tar.gz")
+    genPackageFile = os.path.join(pytools_root, "gen-projects", os.path.basename(generateProjectDir) + ".tar.gz").replace("\\", "/")
 
     util.compress_targz(genPackageFile, generateProjectDir)
 
