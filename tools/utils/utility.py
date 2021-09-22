@@ -6,10 +6,10 @@
 #
 # @create: 2015-12-02
 #
-# @update: 2021-06-18
+# @update: 2021-09-22
 #
 #######################################################################
-from __future__ import print_function
+from __future__ import print_function, unicode_literals
 import os, errno, sys, shutil, inspect, select
 import signal, threading, collections
 import codecs, tempfile, fileinput
@@ -27,9 +27,11 @@ if sys.version_info < (3, 0):
     sys.setdefaultencoding('utf-8')
 elif sys.version_info <= (3, 3):
     import configparser, imp
+    from configparser import ConfigParser
     imp.reload(sys)
 else:
     import configparser, importlib
+    from configparser import ConfigParser
     importlib.reload(sys)
 
 #######################################################################
@@ -342,7 +344,7 @@ def select_sleep(timeout_ms):
 
 def is_exit_process(exit_queue, timeout_ms, exit_flag = 'EXIT'):
     from multiprocessing import Queue
-    from Queue import Empty
+    from queue import Empty
 
     is_exit, arg = False, None
 
@@ -530,6 +532,19 @@ def options_getattr_default(options, attrname, defval):
     except AttributeError:
         return defval
 
+
+def read_config_file(configFile, encodingPage='utf-8'):
+    # https://www.cnblogs.com/huey/p/4334152.html
+    if sys.version_info < (3, 0):
+        config = ConfigParser.SafeConfigParser()
+    else:
+        config = ConfigParser()
+    with codecs.open(configFile, 'r', encoding=encodingPage) as fd:
+        if sys.version_info < (3, 0):
+            config.readfp(fd)
+        else:
+            config.read_file(fd)
+    return config
 #######################################################################
 
 def open_file(fname, mode='w+b', encoding='utf-8'):
@@ -751,7 +766,12 @@ def relay_read_messages(pathfile, posfile, stopfile, chunk_size=65536, read_maxs
                 end = start
                 cbsize = len(chunk)
 
-                for i in xrange(cbsize):
+                if sys.version_info < (3, 0):
+                    xcb = xrange(cbsize)
+                else:
+                    xcb = range(cbsize)
+
+                for i in xcb:
                     end = end + 1
                     if chunk[i] == message_separator:
                         line = chunk[start : end]
@@ -812,7 +832,7 @@ def write_file_utf8(fd, format = None, *arg):
 def writeln_file_utf8(fd, format = None, *arg):
     if format:
         content = format % arg
-        fd.write(unicode(content, 'utf-8'))
+        fd.write(unicode_literals(content, 'utf-8'))
     fd.write(unicode('\n', 'utf-8'))
     pass
 

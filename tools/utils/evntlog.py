@@ -19,10 +19,9 @@
 # * "\033[33m YELLOW \033[0m"
 #
 # init created: 2015-12-22
-# last updated: 2021-01-06
+# last updated: 2021-09-22
 #######################################################################
 import os, sys, inspect, time, datetime, types, logging
-
 
 
 if sys.version_info < (3, 0):
@@ -258,6 +257,9 @@ def init_logger(**kwargs):
         if not logger_level:
             logger_level = default_logger_level
 
+        levelat = ["DEBUG", "INFO", "WARN", "ERROR", "FATAL"].index(logger_level)
+        loggingLevel = (logging.DEBUG, logging.INFO, logging.WARN, logging.ERROR, logging.FATAL)[levelat]
+
         logging_conf = kwargs.get('logging_config')
 
         if logging_conf and os.path.exists(logging_conf) and os.path.isfile(logging_conf):
@@ -270,18 +272,33 @@ def init_logger(**kwargs):
         info("load logging.config: %s", config_yaml)
 
         fd = open(config_yaml)
-        dictcfg = yaml.load(fd, Loader=yaml.FullLoader)
+        try:
+            dictcfg = yaml.safe_load(fd)
+        except:
+            dictcfg = yaml.load(fd, Loader=yaml.FullLoader)
+        pass
+
         logger_file = kwargs.get('logger_file')
 
         update_log_config(dictcfg, logger_name, logger_file, logger_level)
-
         try:
-            logging.config.dictConfig(dictcfg)
-            logger = logging.getLogger(logger_name)
+            import platform
+            if "windows" in platform.system().lower():
+                warn("logging.basicConfig for: %s", platform.system())
+
+                logging.basicConfig(stream=sys.stdout, format='%(message)s', level=loggingLevel)
+                logger = logging.getLogger(logger_name)
+                set_level(logger_level)
+            else:
+                info("logging.config.dictConfig for: %s", platform.system())
+
+                logging.config.dictConfig(dictcfg)
+                logger = logging.getLogger(logger_name)
         except Exception as e:
-            debug("using basicConfig for: %r", e)
-            logging.basicConfig(stream=sys.stdout, format='%(message)s', level=logging.DEBUG)
+            warn("using basicConfig for: %r", e)
+            logging.basicConfig(stream=sys.stdout, format='%(message)s', level=loggingLevel)
             logger = logging.getLogger()
+            set_level(logger_level)
         finally:
             return dictcfg
 

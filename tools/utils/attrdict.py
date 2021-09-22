@@ -1,3 +1,4 @@
+# 2021-09-22
 #  https://stackoverflow.com/questions/13520421/recursive-dotdict
 class attrdict(dict):
     """
