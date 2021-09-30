@@ -6,10 +6,10 @@
 #
 # @create: 2015-12-02
 #
-# @update: 2021-09-22
+# @update: 2021-09-06
 #
 #######################################################################
-from __future__ import print_function, unicode_literals
+from __future__ import print_function
 import os, errno, sys, shutil, inspect, select
 import signal, threading, collections
 import codecs, tempfile, fileinput
@@ -344,7 +344,7 @@ def select_sleep(timeout_ms):
 
 def is_exit_process(exit_queue, timeout_ms, exit_flag = 'EXIT'):
     from multiprocessing import Queue
-    from queue import Empty
+    from Queue import Empty
 
     is_exit, arg = False, None
 
@@ -432,13 +432,13 @@ def init_parser_group(**kargs):
             raise TypeError("group_options")
 
         for options_file in options_files:
-
             fd = open_file(options_file, 'r')
-
             with fd:
-                # optscfg = yamlmod.safe_load(fd)
-                data = fd.read()
-                optscfg = yamlmod.load(data, Loader=yamlmod.FullLoader)
+                try:
+                    optscfg = yamlmod.safe_load(fd)
+                except:
+                    optscfg = yamlmod.load(fd, Loader=yamlmod.FullLoader)
+                pass
 
                 for grpkey in optscfg.keys():
                     title = optscfg[grpkey]['title']
@@ -766,12 +766,7 @@ def relay_read_messages(pathfile, posfile, stopfile, chunk_size=65536, read_maxs
                 end = start
                 cbsize = len(chunk)
 
-                if sys.version_info < (3, 0):
-                    xcb = xrange(cbsize)
-                else:
-                    xcb = range(cbsize)
-
-                for i in xcb:
+                for i in xrange(cbsize):
                     end = end + 1
                     if chunk[i] == message_separator:
                         line = chunk[start : end]
@@ -832,7 +827,7 @@ def write_file_utf8(fd, format = None, *arg):
 def writeln_file_utf8(fd, format = None, *arg):
     if format:
         content = format % arg
-        fd.write(unicode_literals(content, 'utf-8'))
+        fd.write(unicode(content, 'utf-8'))
     fd.write(unicode('\n', 'utf-8'))
     pass
 
