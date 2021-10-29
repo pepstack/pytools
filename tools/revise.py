@@ -7,12 +7,27 @@
 #
 # @author: $author$
 # @create: $create$
-# @update: 2021-01-06 20:40:50
+# @update: 2021-10-29 20:40:50
 # @version: 1.0.0
 ########################################################################
-import os, sys, stat, signal, shutil, inspect, commands, time, datetime
+import os, sys, stat, signal, shutil, inspect, time, datetime
 import yaml, codecs, uuid, platform
-import optparse, ConfigParser
+
+# subprocess
+#   https://www.cnblogs.com/zhming26/p/6283361.html
+
+if sys.version_info < (3, 0):
+    import commands, ConfigParser
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+elif sys.version_info <= (3, 3):
+    import subprocess, configparser, imp
+    from configparser import ConfigParser
+    imp.reload(sys)
+else:
+    import subprocess, configparser, importlib
+    from configparser import ConfigParser
+    importlib.reload(sys)
 
 ########################################################################
 # application specific
@@ -38,10 +53,10 @@ file_counter = 0
 
 # Add your specified directory to be ignored:
 ignored_dirs = [
+        ".git",
         "deps",
         "deplibs",
         "libs",
-        "test",
         "tests",
         "doc",
         "build",
@@ -60,7 +75,7 @@ ignored_files = [
 
 # Add your specified filter for filename to be included:
 included_filter = {
-    'java': ['.java', '.properties', '.xml', '.jsp', '.cresql'],
+    'java': ['.java', '.properties', '.xml', '.jsp', '.cresql', '.yml', '.yaml'],
     'c': ['.h', '.c', '.mk'],
     'cpp': ['.h', '.c', '.cpp', '.cxx', '.hpp', '.mk'],
     'python': ['.py'],
@@ -92,7 +107,7 @@ def test_file(pathfile, fstat):
     pass
 
 
-def revise_file(pathfile, filename, fstat, author, verno, curtime, istest):
+def revise_file(pathfile, filename, fstat, author, verno, curtime, notest):
     global files_count
 
     ct = time.localtime(fstat.st_ctime)
@@ -118,7 +133,10 @@ def revise_file(pathfile, filename, fstat, author, verno, curtime, istest):
     cmds.append("sed -i 's/ *$//' %s" % pathfile)
 
     for cmd in cmds:
-        (retcode, retstring) = commands.getstatusoutput(cmd)
+        if sys.version_info < (3, 0):
+            (retcode, retstring) = commands.getstatusoutput(cmd)
+        else:
+            (retcode, retstring) = subprocess.getstatusoutput(cmd)
 
     os.utime(pathfile, (fstat.st_atime, fstat.st_mtime))
 
@@ -128,7 +146,7 @@ def revise_file(pathfile, filename, fstat, author, verno, curtime, istest):
     pass
 
 
-def sweep_dir(path, included_exts, author, verno, curtime, istest):
+def sweep_dir(path, included_exts, author, verno, curtime, notest):
     filelist = os.listdir(path)
     filelist.sort(key=lambda x:x[0:20])
 
@@ -146,7 +164,7 @@ def sweep_dir(path, included_exts, author, verno, curtime, istest):
                     util.warn("ignored dir: %s" % pf)
                     pass
                 elif util.dir_exists(pf):
-                    sweep_dir(pf, included_exts, author, verno, curtime, istest)
+                    sweep_dir(pf, included_exts, author, verno, curtime, notest)
                     pass
                 else:
                     util.error("not existing dir: %s" % pf)
@@ -168,10 +186,10 @@ def sweep_dir(path, included_exts, author, verno, curtime, istest):
                         pass
 
                 if not ignored:
-                    if istest:
-                        test_file(pf, fs)
+                    if notest:
+                        revise_file(pf, f, fs, author, verno, curtime, notest)
                     else:
-                        revise_file(pf, f, fs, author, verno, curtime, istest)
+                        test_file(pf, fs)
                     pass
         except OSError:
             util.except_print("OSError")
@@ -196,12 +214,12 @@ def main(parser):
     # 当前脚本绝对路径
     abspath = util.script_abspath(inspect.currentframe())
 
-    if not options.path:
-        util.error("No path specified. using: -P, --path=PATH")
+    if not options.prefix:
+        util.error("No path prefix specified. using: --prefix=PATH")
         exit(-1)
 
-    # 取得配置项 options.path 的绝对路径
-    pathprefix = util.source_abspath(APPFILE, options.path, abspath)
+    # 取得配置项 options.prefix 的绝对路径
+    pathprefix = util.source_abspath(APPFILE, options.prefix, abspath)
 
     # 取得文件扩展名数组
     included_exts = []
@@ -229,8 +247,7 @@ def main(parser):
     if options.author:
         util.info("author:    %r" % options.author)
   
-    sweep_dir(pathprefix, included_exts, options.author, options.verno, curtime, options.test)
-
+    sweep_dir(pathprefix, included_exts, options.author, options.verno, curtime, options.notest)
     pass
 
 

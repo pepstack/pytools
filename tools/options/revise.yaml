@@ -36,37 +36,52 @@ main:
             default: 'main'
             help: 'logger name in log config file'
 
-        - path:
-            optarg: '-P --path'
+        - prefix:
+            optarg: '--prefix'
             action: store
             type: string
             help: 'path prefix for source files to be revised'
             metavar: PATH
 
         - filter:
-            optarg: '-F --filter'
+            optarg: '--filter'
             action: store
             type: string
             default: 'java,c,cpp,python,php,shell'
-            help: 'included file filter'
+            help: 'included files filter'
             metavar: FILTER
 
         - verno:
-            optarg: '-N --verno'
+            optarg: '--verno'
             action: store
             type: string
             help: 'update file version number'
             metavar: VERNO
 
         - author:
-            optarg: '-A --author'
+            optarg: '--author'
             action: store
             type: string
             help: 'set author for files'
             metavar: NAME
 
-        - test:
-            optarg: '--test'
+        - notest:
+            optarg: '--notest'
             action: store_true
             default: False
-            help: "only test (not to revise)"
+            help: "do revise (not test)"
+
+        - source:
+            optarg: '--source'
+            action: store
+            type: string
+            help: 'source word to be replaced'
+            metavar: WORD
+
+        - replace:
+            optarg: '--replace'
+            action: store
+            type: string
+            help: 'replace source word'
+            metavar: WORD
+            
